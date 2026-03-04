@@ -1,0 +1,14 @@
+# [PROJECT_NAME] — プロジェクト概要サマリー
+
+## 背景
+- [CURRENT_ISSUES — 現状の課題]
+
+## 提案内容
+- [PROPOSAL_POINT_1]
+- [PROPOSAL_POINT_2]
+- [PROPOSAL_POINT_3]
+
+## 期待効果
+- [EXPECTED_OUTCOME_1]
+- [EXPECTED_OUTCOME_2]
+- [EXPECTED_OUTCOME_3]
