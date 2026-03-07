@@ -9,7 +9,7 @@
 
 ## 技術スタック
 以下はデフォルト構成。案件に応じて変更すること。
-- Frontend: Next.js 14 (App Router)
+- Frontend: Next.js 15 (App Router) — `src/` ディレクトリ
 - UI: Tailwind CSS + shadcn/ui
 - Auth: Supabase Auth
 - API: Server Actions
@@ -20,9 +20,8 @@
 - Monitoring: Sentry + PostHog
 - File Upload: Supabase Storage
 - Security: Cloudflare（DNS / CDN / WAF / Rate Limiting）
-- Notify: [Google Chat Webhook / Slack / LINE 等]
-- Messaging: [LINE Messaging API + LIFF / なし]
-- Design: Figma（MCP接続）
+- Test: Vitest + Playwright
+- CI: GitHub Actions
 
 ## 構成要素
 1. [COMPONENT_1 — 例: Web LP、管理画面、モバイルアプリ等]
@@ -44,8 +43,6 @@
 - [PRINCIPLE_1]
 - [PRINCIPLE_2]
 - [PRINCIPLE_3]
-- [PRINCIPLE_4]
-- [PRINCIPLE_5]
 
 ## ユーザージャーニー
 ### Phase 1: [PHASE_1_NAME]
@@ -56,12 +53,6 @@
 
 ### Phase 3: [PHASE_3_NAME]
 - [PHASE_3_DESCRIPTION]
-
-### Phase 4: [PHASE_4_NAME]
-- [PHASE_4_DESCRIPTION]
-
-### Phase 5: [PHASE_5_NAME]
-- [PHASE_5_DESCRIPTION]
 
 ## 開発哲学 — 自作禁止リスト
 「何を作らないか」が最も重要な判断。以下は絶対に自作しない:
@@ -105,7 +96,17 @@
 - シンプルさ最優先。変更は最小限のコードに留める
 - 一時的な修正は禁止。根本原因を特定して直す
 - 非自明な変更には「もっとエレガントな方法はないか？」を自問
-- 単純な修正は過剰設計しない
+
+## 開発コマンド
+```bash
+cd src
+npm install          # 依存関係インストール
+npm run dev          # 開発サーバー起動
+npm run build        # プロダクションビルド
+npm run lint         # Lint実行
+npm run test:run     # ユニットテスト実行
+npm run test:e2e     # E2Eテスト実行
+```
 
 ## 開発習慣ルール
 - mainに直接pushしない → feature branchを使う

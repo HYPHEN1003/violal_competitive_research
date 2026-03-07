@@ -1,59 +1,88 @@
 # HYPHEN Project Template
 
 HYPHEN CO., LTD. のクライアントプロジェクト用テンプレートリポジトリ。
-Claude Code + Skills + Agents の構成が即座に使える状態で整備されています。
+git clone してすぐに開発開始できる Next.js + Claude Code 環境。
 
-## 使い方
+## クイックスタート
 
-### 1. GitHubで「Use this template」をクリック
-- Repository name: クライアントのプロジェクト名（例: `genmyoji`, `yokota-dental`）
-- Private を選択
-- 「Create repository」
+### 1. テンプレートからリポジトリ作成
+GitHub で「Use this template」→ Repository name にプロジェクト名 → Private → Create
 
-### 2. ローカルにクローン
+### 2. セットアップ
 ```bash
 git clone https://github.com/HYPHEN1003/[プロジェクト名].git
 cd [プロジェクト名]
+
+# Node.js バージョン合わせ
+nvm use
+
+# 依存関係インストール
+cd src
+npm install
+
+# 環境変数設定
+cp .env.example .env.local
+# .env.local を編集
+
+# 開発サーバー起動
+npm run dev
 ```
 
 ### 3. CLAUDE.md をカスタマイズ
-CLAUDE.md内の `[PLACEHOLDER]` をすべてプロジェクト固有の情報に置き換える。
-検索: `\[` で全プレースホルダーを確認できる。
+`[PLACEHOLDER]` をすべてプロジェクト固有の情報に置き換える。
 
-### 4. Claude Codeで作業開始
+### 4. Claude Code で作業開始
 ```bash
 claude
 ```
-CLAUDE.mdが自動で読み込まれ、Skills・Agentsが使える状態になる。
+
+## ディレクトリ構成
+
+```
+├── CLAUDE.md              ← プロジェクト設定（Claude Codeが自動読み込み）
+├── .nvmrc                 ← Node.js バージョン指定
+├── src/                   ← Next.js アプリケーション
+│   ├── app/               ← App Router ページ
+│   ├── lib/               ← ユーティリティ・Supabase クライアント
+│   ├── types/             ← 型定義
+│   ├── __tests__/         ← ユニットテスト（Vitest）
+│   ├── e2e/               ← E2Eテスト（Playwright）
+│   └── .env.example       ← 環境変数テンプレート
+├── .claude/
+│   ├── skills/            ← スキル定義（/コマンド で呼び出し）
+│   └── agents/            ← エージェント定義（専門家の人格）
+├── .github/workflows/     ← CI/CD（lint, test, build, Lighthouse）
+├── docs/                  ← 設計書・提案資料・チェックリスト
+├── prompts/               ← AIプロンプト設計テンプレート
+├── design/                ← デザイン関連リンク
+└── tasks/                 ← タスク管理・教訓記録
+```
 
 ## 含まれるもの
 
 | カテゴリ | 内容 |
 |---------|------|
-| CLAUDE.md | プロジェクト設定テンプレート（技術スタック・デザイントークン・ルール） |
-| Skills（14個） | デザイン系9個 + 実装系5個 |
-| Agents（6個） | designer / ux-writer / prompt-engineer / code-reviewer / qa-tester / db-architect |
-| docs/ | 提案書・設計書テンプレート |
-| tasks/ | タスク管理・教訓記録 |
-| prompts/ | AIプロンプト設計テンプレート |
+| **src/** | Next.js 15 + Tailwind + shadcn/ui の最小構成（ビルド可能） |
+| **テスト** | Vitest（ユニット）+ Playwright（E2E）設定済み |
+| **CI/CD** | GitHub Actions（lint → test → build → Lighthouse） |
+| **Skills（14個）** | コア5個 + オプション9個（詳細: `.claude/skills/README.md`） |
+| **Agents（6個）** | designer / ux-writer / prompt-engineer / code-reviewer / qa-tester / db-architect |
+| **docs/** | 技術スタック / 提案書 / セキュリティチェックリスト / 環境構成 / エージェント活用ガイド |
+
+## 開発コマンド
+
+```bash
+cd src
+npm run dev          # 開発サーバー
+npm run build        # ビルド
+npm run lint         # Lint
+npm run test:run     # ユニットテスト
+npm run test:e2e     # E2Eテスト
+```
 
 ## カスタマイズのポイント
 
-- **技術スタックの変更**: CLAUDE.mdの「技術スタック」と「自作禁止リスト」を案件に合わせて調整
-- **デザイントークンの変更**: CLAUDE.mdの「デザイン方針」をクライアントのブランドに合わせる
-- **Skillsの追加**: `.claude/skills/` に案件固有のSkillを追加
-- **Agentsの調整**: `.claude/agents/` の各エージェントをプロジェクトに最適化
-
-## ディレクトリ構造
-
-```
-├── CLAUDE.md          ← プロジェクトの脳（Claude Codeが自動読み込み）
-├── .claude/
-│   ├── skills/        ← タスクの手順書（/コマンド名 で呼び出し）
-│   └── agents/        ← 専門家の人格定義
-├── docs/              ← 設計書・提案資料
-├── prompts/           ← AIプロンプト設計
-├── design/            ← デザイン関連リンク・メモ
-├── tasks/             ← タスク管理・教訓記録
-└── src/               ← ソースコード
-```
+- **技術スタック**: CLAUDE.md の「技術スタック」と「自作禁止リスト」を案件に合わせて調整
+- **デザイントークン**: CLAUDE.md の「デザイン方針」をクライアントのブランドに合わせる
+- **Skills**: `.claude/skills/` に案件固有のスキルを追加
+- **Agents**: `.claude/agents/` の各エージェントをプロジェクトに最適化

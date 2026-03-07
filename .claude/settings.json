@@ -11,7 +11,9 @@
       "Bash(npx *)",
       "Bash(mkdir *)",
       "Bash(cat *)",
-      "Bash(ls *)"
+      "Bash(ls *)",
+      "Bash(cd src && *)",
+      "Bash(node *)"
     ]
   }
 }

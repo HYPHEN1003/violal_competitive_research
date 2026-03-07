@@ -1,11 +1,37 @@
-.env.local
-.env
+# dependencies
 node_modules/
+
+# next.js
 .next/
-*.log
-.DS_Store
-.vercel
+out/
+
+# build
 dist/
 build/
+
+# env
+.env
+.env.local
+.env.*.local
+
+# debug
+*.log
+npm-debug.log*
+
+# os
+.DS_Store
+
+# vercel
+.vercel
+
+# turbo
 .turbo/
+
+# test
 coverage/
+test-results/
+playwright-report/
+
+# misc
+*.tsbuildinfo
+next-env.d.ts
