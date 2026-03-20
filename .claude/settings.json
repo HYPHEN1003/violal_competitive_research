@@ -27,5 +27,18 @@
       "Grep(./.env.*)"
     ],
     "defaultMode": "default"
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": ".claude/hooks/remind-mco-review.sh"
+          }
+        ]
+      }
+    ]
   }
 }
