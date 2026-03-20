@@ -1,5 +1,5 @@
 ---
-description: Figma URL（ファイル/フレーム）からNext.js + Tailwind + shadcn/uiのコードに変換。Figma MCP必須。
+description: Use when user provides a Figma URL (figma.com/design/...), says "Figmaからコード", "このFigmaを実装", or needs to convert Figma designs to Next.js + Tailwind + shadcn/ui code via Figma MCP. For non-Figma designs, use design-to-code instead.
 ---
 
 # Figma to Code Converter

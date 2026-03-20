@@ -1,5 +1,5 @@
 ---
-description: 業界のデザイントレンドを分析。マクロトレンド、競合マップ、戦略提案、ロードマップを提供。
+description: Use when user says "デザイントレンド", "競合分析", "業界トレンド", "デザインの方向性を調べて", or needs industry design trend analysis with competitor mapping and strategic recommendations.
 ---
 
 # Design Trend Synthesizer

@@ -1,5 +1,5 @@
 ---
-description: ブランドアイデンティティを包括的に構築。ストーリー、ロゴ方向性、カラー、タイポグラフィ、ブランドブック構成まで。
+description: Use when user says "ブランディング", "ブランド構築", "ロゴ方向性", "ブランドブック", "VI", "ビジュアルアイデンティティ", or needs to define brand strategy, color system, typography, and brand guidelines from scratch.
 ---
 
 # Brand Identity Creator

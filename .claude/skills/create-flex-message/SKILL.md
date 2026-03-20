@@ -1,5 +1,5 @@
 ---
-description: LINE Flex Messageを設計・生成する。JSON形式で出力し、LINE Bot Designerでプレビュー可能。
+description: Use when user says "Flex Message", "LINE メッセージ", "LINEのカード", "リッチメッセージ", or needs to create LINE Flex Message JSON for chatbot or notification flows.
 ---
 
 # Flex Message Creator

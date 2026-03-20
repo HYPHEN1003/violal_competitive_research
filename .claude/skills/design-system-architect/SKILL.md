@@ -1,5 +1,5 @@
 ---
-description: ブランドのデザインシステムを構築する。カラー、タイポグラフィ、グリッド、コンポーネント、デザイントークンを体系的に定義。
+description: Use when user says "デザインシステム", "デザイントークン", "カラーパレット定義", "コンポーネント設計", or needs to build a comprehensive design system with colors, typography, grid, spacing, and component specifications.
 ---
 
 # Design System Architect

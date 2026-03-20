@@ -1,5 +1,5 @@
 ---
-description: デザインを専門的にクリティカルレビュー。ヒューリスティック評価、改善提案、代替方向性を提供。
+description: Use when user says "デザインレビュー", "デザイン評価", "UIの改善点", "ヒューリスティック評価", or wants expert critique of a design with scoring and improvement suggestions.
 ---
 
 # Design Critique Partner

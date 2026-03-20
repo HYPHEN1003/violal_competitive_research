@@ -1,5 +1,5 @@
 ---
-description: クライアント向けの提案スライド（企画書）のコンテンツを作成する。住職・経営者など非エンジニアに伝わる言葉で。
+description: Use when user says "企画書", "提案スライド", "提案資料", "プレゼン資料", "クライアントへの説明", or needs to create proposal content for non-technical stakeholders.
 ---
 
 # Proposal Slide Creator

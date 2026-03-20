@@ -1,5 +1,5 @@
 ---
-description: デザインをFigma用のAuto Layout仕様に変換。フレーム構造、レスポンシブルール、コンポーネント設計、デザイントークンまで。
+description: Use when user says "Auto Layout", "Figmaのレイアウト", "Figmaコンポーネント設計", or needs to convert designs into Figma Auto Layout specifications with frame hierarchy, responsive rules, and design tokens.
 ---
 
 # Figma Auto-Layout Expert
