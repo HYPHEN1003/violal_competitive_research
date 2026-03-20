@@ -1,5 +1,5 @@
 ---
-description: WCAG 2.2 AA準拠のアクセシビリティ監査。チェックリスト、違反箇所、修正手順を提供。
+description: Use when user says "アクセシビリティ", "a11y", "WCAG", "コントラスト", "キーボード操作", "スクリーンリーダー", or asks to audit accessibility compliance. WCAG 2.2 AA準拠の監査を実施し、違反箇所と修正手順を提供する。
 ---
 
 # Accessibility Auditor

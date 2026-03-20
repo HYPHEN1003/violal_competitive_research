@@ -1,5 +1,5 @@
 ---
-description: ペルソナ・ゴール・ペインポイントに基づくUI/UXパターン設計。8コア画面の詳細設計を含む。
+description: Use when user says "UI設計", "UX設計", "画面設計", "ワイヤーフレーム", "情報設計", or needs comprehensive UI/UX pattern design based on personas, goals, and pain points with detailed screen specifications.
 ---
 
 # UI/UX Pattern Master

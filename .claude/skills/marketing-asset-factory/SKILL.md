@@ -1,5 +1,5 @@
 ---
-description: マーケティングキャンペーンのアセットを包括的に作成。広告、メール、LP、SNS、営業資料まで。
+description: Use when user says "広告コピー", "メールシーケンス", "SNS投稿", "キャンペーンアセット", "営業資料", or needs to create a comprehensive set of marketing assets (ads, emails, LP copy, social posts, sales materials).
 ---
 
 # Marketing Asset Factory

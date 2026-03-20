@@ -1,5 +1,5 @@
 ---
-description: AIチャットボット・ヒアリングのプロンプトをレビュー・改善する。文体の適切さ、安全性、感情配慮を評価。
+description: Use when user says "プロンプトレビュー", "プロンプト改善", "チャットボットの文言チェック", "プロンプトの品質", or needs to review and improve AI chatbot/hearing system prompts for tone, safety, and emotional sensitivity.
 ---
 
 # Prompt Reviewer

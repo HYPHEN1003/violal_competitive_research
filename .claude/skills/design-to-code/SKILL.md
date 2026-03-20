@@ -1,5 +1,5 @@
 ---
-description: テキスト記述・スクリーンショット・手書きスケッチからプロダクションレディなコードに変換。Figma不要。
+description: Use when user says "このデザインをコードに", "スクショからコード", "手書きからコード", "デザインを実装", provides a screenshot or sketch, or needs to convert visual designs to code without Figma. For Figma URLs, use figma-to-code instead.
 ---
 
 # Design-to-Code Translator

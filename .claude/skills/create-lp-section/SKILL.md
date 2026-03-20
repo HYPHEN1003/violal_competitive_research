@@ -1,5 +1,5 @@
 ---
-description: LPの各セクションをNext.js + Tailwind + shadcn/uiで実装する。CLAUDE.mdのデザイントークンに従う。
+description: Use when user says "LPセクション", "Hero作って", "FAQ作って", "CTAセクション", "LP実装", or needs to implement a specific landing page section with Next.js + Tailwind + shadcn/ui.
 ---
 
 # LP Section Creator
