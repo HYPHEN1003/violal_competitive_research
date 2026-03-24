@@ -2,6 +2,13 @@
 
 リリース前に全項目を確認すること。
 
+## Claude Code セキュリティ設定
+- [ ] `.claude/settings.json` の deny ルールがプロジェクトの機密ファイルを網羅している
+- [ ] `guard-dangerous-commands.sh` フックが有効（破壊的コマンドのブロック）
+- [ ] `/permissions` で現在の許可状況を確認し、不要な許可を削除
+- [ ] `NEXT_PUBLIC_` 以外の環境変数が Claude Code のコンテキストに漏れていないか確認
+- [ ] チーム開発の場合: 組織の `.claude/settings.json` ポリシーと整合しているか確認
+
 ## 認証・認可
 - [ ] Supabase RLS が全テーブルで有効
 - [ ] 認証が必要なページに未認証アクセスでリダイレクトされる
