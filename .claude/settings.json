@@ -81,6 +81,23 @@
           {
             "type": "command",
             "command": ".claude/hooks/guard-dangerous-commands.sh"
+          },
+          {
+            "type": "command",
+            "command": ".claude/hooks/detect-stripe-key-leak.sh"
+          }
+        ]
+      },
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": ".claude/hooks/detect-stripe-key-leak.sh"
+          },
+          {
+            "type": "command",
+            "command": ".claude/hooks/check-rls-on-migration.sh"
           }
         ]
       }

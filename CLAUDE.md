@@ -16,6 +16,7 @@
 - DB: Supabase (PostgreSQL)
 - Payment: Stripe
 - AI: Claude API (claude-sonnet)
+- AI (optional): Amazon Bedrock (JP推論プロファイル) / Llama Cloud (LlamaParse + LlamaIndex)
 - Deploy: Vercel
 - Monitoring: Sentry + PostHog
 - File Upload: Supabase Storage
@@ -44,6 +45,9 @@
 - File Upload → Supabase Storage
 - Security → Cloudflare（WAF/レート制限自作禁止）
 - Realtime → Supabase Realtime（WebSocket自作禁止）
+- Error Tracking → Sentry（自作ログ収集禁止）
+- AI Gateway → Amazon Bedrock（使用時は直接APIコール禁止、SDK経由必須。`npm install @anthropic-ai/bedrock-sdk`）
+- Document Processing → Llama Cloud LlamaParse（使用時はPDF解析自作禁止。`npm install llamaindex`）
 
 ## 作業プロセスルール
 

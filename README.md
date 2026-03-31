@@ -1,6 +1,6 @@
-# HYPHEN Project Starter v3.20
+# HYPHEN Project Starter v4.0
 
-> **Version**: v3.20（2026-03-20）
+> **Version**: v4.0（2026-04-01）
 > **Anthropic公式ドキュメント準拠** — Claude Code agents/skills/rules/hooks
 
 HYPHEN CO., LTD. のクライアントプロジェクト用スターターキット。
@@ -45,10 +45,10 @@ claude
 ```
 ├── CLAUDE.md                  ← プロジェクト設定（<important if> パターン対応）
 ├── .claude/
-│   ├── agents/                ← 6エージェント（公式フロントマター形式）
-│   ├── skills/                ← 17スキル（トリガー条件付き）
-│   ├── rules/                 ← パス固有ルール（api/db/ui）
-│   ├── hooks/                 ← ガードレール（MCOレビューリマインド）
+│   ├── agents/                ← 18エージェント（公式フロントマター形式）
+│   ├── skills/                ← 26スキル（トリガー条件付き）
+│   ├── rules/                 ← 6ルール（api/db/ui/ai/security/integration）
+│   ├── hooks/                 ← 4フック（ガードレール + キー漏洩検出 + RLSチェック）
 │   └── settings.json          ← 権限設定（$schema付き、セキュリティ重視）
 ├── src/                       ← Next.js 16 アプリケーション
 │   ├── app/                   ← App Router ページ
@@ -70,10 +70,10 @@ claude
 
 | カテゴリ | 内容 |
 |---------|------|
-| **Agents（6個）** | designer / ux-writer / prompt-engineer / code-reviewer / qa-tester / db-architect |
-| **Skills（17個）** | 仕様書壁打ち(2) + PRレビュー(1) + デザイン系(14) |
-| **Rules（3個）** | api-rules / db-rules / ui-rules（パス固有で自動注入） |
-| **Hooks** | MCOレビューリマインド（PR作成時） |
+| **Agents（18個）** | 既存8 + database-reviewer / build-error-resolver / typescript-reviewer / performance-optimizer / refactor-cleaner / e2e-runner / harness-optimizer / loop-operator / doc-updater / chief-of-staff |
+| **Skills（26個）** | 既存21 + bedrock-setup / supabase-security-audit / data-migration-guard / mlops-pipeline / supabase-bulk-users / domain-setup |
+| **Rules（6個）** | api / db / ui / ai / security / integration（パス固有で自動注入） |
+| **Hooks（4個）** | 危険コマンドブロック / MCOリマインド / Stripeキー漏洩検出 / RLSチェック |
 | **Templates** | プロジェクト仕様書 / 機能仕様書 |
 | **Tests** | Vitest（ユニット）+ Playwright（E2E）設定済み |
 | **CI/CD** | GitHub Actions（lint → test → build → Lighthouse） |
@@ -112,6 +112,7 @@ npm run test:e2e     # E2Eテスト
 
 | Version | Date | Changes |
 |---------|------|---------|
+| v4.0 | 2026-04-01 | ECC由来エージェント10個、Obsidianスキル6個、AI/Security/Integrationルール、フック強化、Bedrock/LlamaCloud(optional)対応 |
 | v3.20 | 2026-03-20 | Anthropic公式準拠、仕様書テンプレート、MCOレビュー習慣化 |
 | v2.0 | - | Next.js + テスト + CI/CD + ドキュメント整備 |
 | v1.0 | - | 初期テンプレート（Supabase中心版） |

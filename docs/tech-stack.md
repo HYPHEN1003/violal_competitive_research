@@ -4,11 +4,12 @@
 
 | 技術 | 選定理由 |
 |------|---------|
-| Next.js 14 (App Router) | [例: Server Components によるパフォーマンス最適化、Vercel との親和性] |
+| Next.js 16 (App Router) | [例: Server Components によるパフォーマンス最適化、Vercel との親和性] |
 | Tailwind CSS + shadcn/ui | [例: ユーティリティファーストで高速UI開発、カスタマイズ性が高い] |
 | Supabase | [例: PostgreSQL + Auth + Storage + Realtime を一括提供、RLS でセキュリティ担保] |
 | Stripe | [例: 業界標準の決済基盤、従量課金で初期コストゼロ] |
-| Claude API | [例: 高品質な日本語対応、プロンプトの柔軟性] |
+| Claude API / Amazon Bedrock | [例: 高品質な日本語対応、JP推論プロファイルで国内完結] |
+| Llama Cloud (LlamaParse + LlamaIndex) | [例: PDF解析・RAGパイプライン、ドキュメント処理の標準化] |
 | Vercel | [例: Next.js 公式ホスティング、Preview URL で即座にレビュー可能] |
 | Sentry | [例: リアルタイムエラー監視、ソースマップ対応] |
 | PostHog | [例: プロダクトアナリティクス、ファネル分析、セッションリプレイ] |

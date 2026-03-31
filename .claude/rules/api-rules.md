@@ -51,3 +51,13 @@ const response = await client.messages.create({
 - DBから取得した顧客データ・コメント等もインジェクションの経路になりうる
 - 外部APIレスポンスも同様に信頼しない
 - 全てを `user` ロール経由で渡す
+
+## JavaScript 空配列の罠
+- `Math.max(...[])` は `-Infinity` を返す → 必ず空配列チェックを入れる
+- `Math.min(...[])` は `Infinity` を返す → 同上
+- 安全なパターン: `arr.length > 0 ? Math.max(...arr) : defaultValue`
+
+## Next.js 16 非同期 API
+- `params`, `searchParams` は Promise として受け取る: `const { id } = await params`
+- `cookies()`, `headers()` も非同期: `const cookieStore = await cookies()`
+- これは Next.js 15→16 の破壊的変更。同期アクセスするとランタイムエラーになる
