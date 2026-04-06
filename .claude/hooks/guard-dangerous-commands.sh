@@ -3,11 +3,17 @@
 # PreToolUse: Bash にマッチ
 
 INPUT=$(cat)
-COMMAND=$(echo "$INPUT" | jq -r '.tool_input.command // ""' 2>/dev/null)
+source "$(dirname "$0")/_parse-input.sh"
+COMMAND=$(_parse_field "$INPUT" "command")
 
-# --- 破壊的 git コマンド ---
-if echo "$COMMAND" | grep -qE "git\s+push\s+.*(-f|--force)"; then
-  echo '{"decision":"block","reason":"git push --force は禁止されています。通常の git push を使用してください。"}'
+# --- 破壊的 git コマンド（--force-with-lease, --force-if-includes は許可） ---
+if echo "$COMMAND" | grep -qE "git\s+push\s+.*--force($|\s)" && ! echo "$COMMAND" | grep -qE "force-with-lease|force-if-includes"; then
+  echo '{"decision":"block","reason":"git push --force は禁止されています。--force-with-lease を使用してください。"}'
+  exit 0
+fi
+
+if echo "$COMMAND" | grep -qE "git\s+push\s+.*\s-f($|\s)" && ! echo "$COMMAND" | grep -qE "force-with-lease|force-if-includes"; then
+  echo '{"decision":"block","reason":"git push -f は禁止されています。--force-with-lease を使用してください。"}'
   exit 0
 fi
 

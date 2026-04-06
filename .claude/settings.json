@@ -65,9 +65,19 @@
       "Bash(curl * | sh)",
       "Bash(curl * | bash)",
       "Bash(wget * | sh)",
-      "Bash(wget * | bash)"
+      "Bash(wget * | bash)",
+      "Bash(cat .env*)",
+      "Bash(cat */.env*)",
+      "Bash(head .env*)",
+      "Bash(head */.env*)",
+      "Bash(tail .env*)",
+      "Bash(tail */.env*)",
+      "Bash(less .env*)",
+      "Bash(more .env*)",
+      "Bash(cat **/credentials*)",
+      "Bash(cat **/service-account*)"
     ],
-    "defaultMode": "default"
+    "defaultMode": "acceptEdits"
   },
   "hooks": {
     "PreToolUse": [
@@ -76,15 +86,26 @@
         "hooks": [
           {
             "type": "command",
-            "command": ".claude/hooks/remind-mco-review.sh"
+            "command": ".claude/hooks/remind-mco-review.sh",
+            "if": "Bash(gh pr create *)"
           },
           {
             "type": "command",
-            "command": ".claude/hooks/guard-dangerous-commands.sh"
+            "command": ".claude/hooks/guard-dangerous-commands.sh",
+            "if": "Bash(git *)|Bash(rm *)|Bash(chmod *)|Bash(curl *)|Bash(wget *)"
           },
           {
             "type": "command",
-            "command": ".claude/hooks/detect-stripe-key-leak.sh"
+            "command": ".claude/hooks/detect-secret-leak.sh"
+          },
+          {
+            "type": "command",
+            "command": ".claude/hooks/log-commands.sh"
+          },
+          {
+            "type": "command",
+            "command": ".claude/hooks/require-tests-for-pr.sh",
+            "if": "Bash(gh pr create *)"
           }
         ]
       },
@@ -93,11 +114,26 @@
         "hooks": [
           {
             "type": "command",
-            "command": ".claude/hooks/detect-stripe-key-leak.sh"
+            "command": ".claude/hooks/detect-secret-leak.sh"
           },
           {
             "type": "command",
             "command": ".claude/hooks/check-rls-on-migration.sh"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": ".claude/hooks/auto-format.sh"
+          },
+          {
+            "type": "command",
+            "command": ".claude/hooks/auto-lint.sh"
           }
         ]
       }

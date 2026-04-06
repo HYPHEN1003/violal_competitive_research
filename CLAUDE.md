@@ -66,6 +66,13 @@
 - 一時的な修正は禁止。根本原因を特定して直す
 - 非自明な変更には「もっとエレガントな方法はないか？」を自問
 
+### 引き算の原則 — 「できること」≠「やること」
+- AIがやれることを全部タスクに追加しない。ゴールに直結するものだけ残す
+- 新しいツール・スキル・機能を導入する前に「これは今週の売上に直結するか？」を問う
+- 「作らせるな、埋めさせろ」— AIに丸投げせず、人間が設計してAIが実行する
+- やらないと決めたことは tasks/todo.md に「NOT DOING」セクションで明記する
+- 忙しくなったと感じたら立ち止まる。タスクを増やすのではなく減らす
+
 ## 絶対ルール
 - APIキーやシークレット情報は絶対にコードに含めない
 - [PROJECT_SPECIFIC_RULES — プロジェクト固有のルール]
@@ -120,6 +127,18 @@ npm run test:run     # ユニットテスト実行
 npm run test:e2e     # E2Eテスト実行
 ```
 
+### Supabase ローカル開発（Docker必須）
+```bash
+cd src
+npm run db:start           # ローカルSupabase起動
+npm run db:stop            # ローカルSupabase停止
+npm run db:reset           # DB リセット＆マイグレーション＆シード適用
+npm run db:diff            # ローカルDBの差分からマイグレーション生成
+npm run db:migration:new   # 空のマイグレーションファイル作成
+npm run db:push            # リモートDBにマイグレーション適用
+npm run db:types           # DBスキーマからTypeScript型を自動生成
+```
+
 </important>
 
 <important if="you are committing, creating branches, creating PR, or deploying">
@@ -142,6 +161,15 @@ npm run test:e2e     # E2Eテスト実行
 ## ミスからの学習
 - 修正指示を受けたら tasks/lessons.md にパターンを記録
 - セッション開始時にlessons.mdを確認
+
+## セッション引き継ぎ（HANDOFF.md）
+- **セッション終了前に必ず `HANDOFF.md` を更新する**
+  - テンプレート: `docs/templates/HANDOFF.md`
+  - 記録内容: どこまでやったか / 何を試したか（失敗含む） / 次に何をすべきか / 検証基準
+- **次セッション開始時は最初に `HANDOFF.md` を読む**
+  - 「設計意図の消失」「コンテキスト汚染」を防ぐため
+  - lessons.md と併せて確認
+- HANDOFF.md はプロジェクトルートに配置し、git管理対象とする
 
 </important>
 

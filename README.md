@@ -1,10 +1,36 @@
-# HYPHEN Project Starter v4.0
+# HYPHEN Project Starter v4.2
 
-> **Version**: v4.0（2026-04-01）
+> **Version**: v4.2（2026-04-07）
 > **Anthropic公式ドキュメント準拠** — Claude Code agents/skills/rules/hooks
 
 HYPHEN CO., LTD. のクライアントプロジェクト用スターターキット。
 git clone してすぐに開発開始できる Next.js 16 + Claude Code 環境。
+
+## 前提条件
+
+- Node.js 20+
+- npm 10+
+- jq（フックのJSON解析に必要: `brew install jq`）
+- Claude Code CLI
+
+## 研究駆動開発（Research-Driven Development）
+
+このテンプレートは「一度作って終わり」ではありません。
+世界中のOSSを日常的に調査・検証し、使えると判断したものを継続的に取り込んでいます。
+
+```
+情報収集（Twitter / GitHub / 技術コミュニティ）
+    ↓  必ず自分でGitHubを開いて試す
+検証（クローン → 実行 → 評価）
+    ↓  使える/使えないを判断
+ナレッジ化（セカンドブレインに蓄積）
+    ↓  パターンをテンプレートに反映
+テンプレート更新（hyphen-project-starter）
+    ↓  クライアント案件で実戦投入
+フィードバック → 次の調査サイクルへ
+```
+
+調査記録は `docs/templates/tech-research-log.md` テンプレートで管理しています。
 
 ## クイックスタート
 
@@ -45,10 +71,10 @@ claude
 ```
 ├── CLAUDE.md                  ← プロジェクト設定（<important if> パターン対応）
 ├── .claude/
-│   ├── agents/                ← 18エージェント（公式フロントマター形式）
-│   ├── skills/                ← 26スキル（トリガー条件付き）
+│   ├── agents/                ← 19エージェント（公式フロントマター形式）
+│   ├── skills/                ← 36スキル（トリガー条件付き）
 │   ├── rules/                 ← 6ルール（api/db/ui/ai/security/integration）
-│   ├── hooks/                 ← 4フック（ガードレール + キー漏洩検出 + RLSチェック）
+│   ├── hooks/                 ← 8フック（セキュリティ + 品質 + ログ）
 │   └── settings.json          ← 権限設定（$schema付き、セキュリティ重視）
 ├── src/                       ← Next.js 16 アプリケーション
 │   ├── app/                   ← App Router ページ
@@ -68,34 +94,97 @@ claude
 
 ## 含まれるもの
 
-| カテゴリ | 内容 |
-|---------|------|
-| **Agents（18個）** | 既存8 + database-reviewer / build-error-resolver / typescript-reviewer / performance-optimizer / refactor-cleaner / e2e-runner / harness-optimizer / loop-operator / doc-updater / chief-of-staff |
-| **Skills（26個）** | 既存21 + bedrock-setup / supabase-security-audit / data-migration-guard / mlops-pipeline / supabase-bulk-users / domain-setup |
-| **Rules（6個）** | api / db / ui / ai / security / integration（パス固有で自動注入） |
-| **Hooks（4個）** | 危険コマンドブロック / MCOリマインド / Stripeキー漏洩検出 / RLSチェック |
-| **Templates** | プロジェクト仕様書 / 機能仕様書 |
-| **Tests** | Vitest（ユニット）+ Playwright（E2E）設定済み |
-| **CI/CD** | GitHub Actions（lint → test → build → Lighthouse） |
+| カテゴリ | 数量 | 内容 |
+|---------|------|------|
+| **Agents** | 19個 | code-reviewer, db-architect, designer, ux-writer, qa-tester, prompt-engineer, typescript-reviewer, performance-optimizer, build-error-resolver, e2e-runner, refactor-cleaner, database-reviewer, harness-optimizer, loop-operator, doc-updater, chief-of-staff, image-advisor, youtube-researcher, aidesigner-frontend |
+| **Skills** | 37個 | 下記「スキル一覧」参照 |
+| **Rules** | 6個 | api / db / ui / ai / security / integration（パス固有で自動注入） |
+| **Hooks** | 8個 | 下記「フック一覧」参照 |
+| **Templates** | 7個 | プロジェクト仕様書 / 機能仕様書 / HANDOFF / 営業企画書 / 提案サマリー / 提案補足 / 技術調査ログ |
+| **Tests** | 設定済み | Vitest（ユニット）+ Playwright（E2E） |
+| **CI/CD** | 設定済み | GitHub Actions（lint → 型チェック → test → E2E → security audit → build → Lighthouse） |
 
-## スキル一覧
+## スキル一覧（37個）
 
-### 開発ワークフロー
+### コア開発（4個）
 | コマンド | 説明 |
 |---------|------|
 | `/spec-project` | 壁打ちでプロジェクト全体の仕様書を作成 |
 | `/spec-feature` | 壁打ちで機能単位の仕様書を作成 |
 | `/pre-pr-review` | MCO 3AIレビュー（PR作成前） |
+| `/tdd` | RED-GREEN-REFACTORループによるテスト駆動開発 |
 
-### デザイン・実装
+### デザイン・UI（11個）
 | コマンド | 説明 |
 |---------|------|
 | `/design-to-code` | テキスト/スクショからコード変換 |
 | `/figma-to-code` | FigmaデザインからFigma MCP経由でコード変換 |
-| `/create-lp-section` | LPセクション実装 |
-| `/design-system-architect` | デザインシステム構築 |
-| `/design-critique` | デザインレビュー |
-| `/accessibility-auditor` | WCAG 2.2 AA監査 |
+| `/create-lp-section` | LPセクション（Hero/About/FAQ等）実装 |
+| `/design-system-architect` | デザイントークン・コンポーネント体系構築 |
+| `/design-critique` | デザインレビュー・改善提案 |
+| `/accessibility-auditor` | WCAG 2.2 AA準拠チェック |
+| `/brand-identity-creator` | ブランドアイデンティティ構築 |
+| `/figma-auto-layout` | Figma Auto Layout仕様の変換 |
+| `/design-trend-synthesizer` | デザイントレンド分析 |
+| `/ui-ux-pattern-master` | 画面設計・UIパターン設計 |
+| `/aidesigner` | AI Designer MCP連携UIデザイン生成（要セットアップ） |
+
+### 営業・提案（4個）
+| コマンド | 説明 |
+|---------|------|
+| `/create-proposal-slide` | クライアント向け提案スライドを作成 |
+| `/create-service-proposal` | HYPHEN AIサービスの汎用営業企画書を生成 |
+| `/sales-proposal-pipeline` | 5ステージ営業提案パイプライン（※1） |
+| `/marketing-asset-factory` | マーケティングアセット一括作成 |
+
+### リサーチ・分析（6個）
+| コマンド | 説明 |
+|---------|------|
+| `/hypothesis-driven-analysis` | 仮説駆動分析（新規事業・戦略判断） |
+| `/market-research-pipeline` | AI市場リサーチ5ステップ |
+| `/research-google-trends` | Google Trends キーワード分析 |
+| `/research-hackernews` | HackerNews トップ記事分析 |
+| `/research-grok-x` | Grok API × X リアルタイム検索 |
+| `/grill-me` | プラン・設計の容赦ないストレステスト |
+
+### インフラ・セキュリティ（6個）
+| コマンド | 説明 |
+|---------|------|
+| `/supabase-security-audit` | Supabase RLS・セキュリティ一括監査 |
+| `/supabase-bulk-users` | Supabase Auth一括ユーザー作成 |
+| `/domain-setup` | Cloudflare + Vercel ドメイン設定 |
+| `/bedrock-setup` | Amazon Bedrock移行チェックリスト |
+| `/data-migration-guard` | JSON→DB移行チェック |
+| `/mlops-pipeline` | ML自動再学習パイプライン設計 |
+
+### コンテンツ・品質（5個）
+| コマンド | 説明 |
+|---------|------|
+| `/review-prompt` | AIプロンプト品質レビュー |
+| `/avoid-ai-writing` | AI文章の「AIっぽさ」検出・リライト（英語専用） |
+| `/create-flex-message` | LINE Flex Message生成 |
+| `/ubiquitous-language` | DDD式ユビキタス言語抽出 |
+| `/meeting-prep-briefing` | 商談準備ブリーフィング自動生成 |
+| `/avoid-ai-writing-ja` | AI文章の「AIっぽさ」検出・リライト（日本語専用） |
+
+> **※1**: `sales-proposal-pipeline` は `mkt-sales-playbook` と `mkt-content-ops` に依存。
+> これらは [hyphen-marketing-skills](https://github.com/HYPHEN1003/hyphen-marketing-skills) からインストール:
+> `bash ~/Documents/dev/hyphen-marketing-skills/install.sh`
+
+## フック一覧（8個）
+
+| フック | 実行時期 | 役割 |
+|--------|---------|------|
+| `guard-dangerous-commands.sh` | PreToolUse (Bash) | 破壊的コマンドブロック（二重防御） |
+| `detect-secret-leak.sh` | PreToolUse (Bash/Write/Edit) | Stripe/Anthropic/OpenAI/AWS/GitHub/Google/Slack/Vercelキー漏洩検出 |
+| `check-rls-on-migration.sh` | PreToolUse (Write/Edit) | RLSポリシー検証 |
+| `require-tests-for-pr.sh` | PreToolUse (Bash) | PR作成前のテスト要件チェック |
+| `remind-mco-review.sh` | PreToolUse (Bash) | MCOレビュー確認リマインド |
+| `log-commands.sh` | PreToolUse (Bash) | コマンド実行ログ記録 |
+| `auto-format.sh` | PostToolUse (Write/Edit) | Prettier自動フォーマット |
+| `auto-lint.sh` | PostToolUse (Write/Edit) | ESLint自動修正 |
+
+全フックは `_parse-input.sh` 共通パーサーを使用。jq 必須（フェイルクローズ: 未インストール時はブロック）。
 
 ## 開発コマンド
 
@@ -108,10 +197,17 @@ npm run test:run     # ユニットテスト
 npm run test:e2e     # E2Eテスト
 ```
 
+## マーケティングスキル（別リポジトリ）
+
+マーケティング・営業Ops系スキル（11個）は [hyphen-marketing-skills](https://github.com/HYPHEN1003/hyphen-marketing-skills) に分離しています。
+`~/.claude/skills/` にグローバルインストールすれば、どのプロジェクトからでも使用可能。
+
 ## バージョン履歴
 
 | Version | Date | Changes |
 |---------|------|---------|
+| v4.2 | 2026-04-07 | mkt-*分離(-1.2MB)、jqフェイルクローズ化、キー検出13種(+Anthropic/Google/Vercel)、認証フロー+ダッシュボード雛形、shadcn/ui 5コンポーネント、CI強化(E2E+型チェック+security audit)、Dependabot、next.config.ts移行 |
+| v4.1 | 2026-04-03 | 営業企画書テンプレート・スキル追加、技術調査ログテンプレート、研究駆動開発セクション |
 | v4.0 | 2026-04-01 | ECC由来エージェント10個、Obsidianスキル6個、AI/Security/Integrationルール、フック強化、Bedrock/LlamaCloud(optional)対応 |
 | v3.20 | 2026-03-20 | Anthropic公式準拠、仕様書テンプレート、MCOレビュー習慣化 |
 | v2.0 | - | Next.js + テスト + CI/CD + ドキュメント整備 |

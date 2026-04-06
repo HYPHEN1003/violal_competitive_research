@@ -1,11 +1,11 @@
 # 新プロジェクト立ち上げガイド
 
-Template2から新プロジェクトを作成する際の手順と、Claude Codeとの壁打ちフローを定義する。
+hyphen-project-starterから新プロジェクトを作成する際の手順と、Claude Codeとの壁打ちフローを定義する。
 
 ## 概要
 
 ```
-Template2（汎用） → コピー → 壁打ち → カスタマイズ → 開発開始
+hyphen-project-starter（汎用） → コピー → 壁打ち → カスタマイズ → 開発開始
 ```
 
 ---
@@ -15,7 +15,7 @@ Template2（汎用） → コピー → 壁打ち → カスタマイズ → 開
 ### 手順
 ```bash
 # 1. テンプレートからコピー
-gh repo create HYPHEN1003/[project-name] --template HYPHEN1003/Template2 --private
+gh repo create HYPHEN1003/[project-name] --template HYPHEN1003/hyphen-project-starter --private
 gh repo clone HYPHEN1003/[project-name]
 cd [project-name]
 
@@ -25,7 +25,7 @@ claude
 
 ### Claude Codeに伝えること
 ```
-Template2から新プロジェクトを立ち上げます。
+hyphen-project-starterから新プロジェクトを立ち上げます。
 docs/new-project-guide.md に従って壁打ちを進めてください。
 ```
 
@@ -162,7 +162,7 @@ npm run dev
 
 # 最初のコミット
 git add -A
-git commit -m "chore: initialize project from Template2"
+git commit -m "chore: initialize project from hyphen-project-starter"
 git push -u origin main
 ```
 

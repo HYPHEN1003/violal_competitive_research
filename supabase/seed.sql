@@ -1,0 +1,11 @@
+-- Seed data for local development
+-- supabase db reset 実行時に自動で読み込まれる
+--
+-- 使い方:
+--   1. ローカル開発用のテストデータをここに書く
+--   2. `npm run db:reset` で DB をリセット＆シード適用
+
+-- Example:
+-- INSERT INTO public.profiles (id, display_name, email)
+-- VALUES
+--   ('00000000-0000-0000-0000-000000000001', 'テストユーザー', 'test@example.com');

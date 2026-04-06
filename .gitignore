@@ -35,3 +35,8 @@ playwright-report/
 # misc
 *.tsbuildinfo
 next-env.d.ts
+
+# Claude Code command logs
+.claude/logs/
+.aidesigner/*
+!.aidesigner/.gitkeep

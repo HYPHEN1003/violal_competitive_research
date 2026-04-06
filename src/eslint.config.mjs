@@ -1,0 +1,24 @@
+import nextPlugin from "@next/eslint-plugin-next"
+import js from "@eslint/js"
+
+export default [
+  js.configs.recommended,
+  {
+    plugins: {
+      "@next/next": nextPlugin,
+    },
+    rules: {
+      ...nextPlugin.configs.recommended.rules,
+      ...nextPlugin.configs["core-web-vitals"].rules,
+    },
+  },
+  {
+    files: ["**/*.js"],
+    languageOptions: {
+      globals: { module: "readonly", require: "readonly", __dirname: "readonly" },
+    },
+  },
+  {
+    ignores: [".next/", "node_modules/"],
+  },
+]

@@ -2,26 +2,16 @@
 # Supabaseマイグレーションファイルに CREATE TABLE があるのに
 # RLS ENABLE がない場合に警告するフック
 # PreToolUse: Write, Edit にマッチ
-# 依存: jq（未インストール時はapproveにフォールバック）
 # 制限: 単一編集内のチェックのみ。複数編集に分割された場合は検出できない。
 
-# jq 存在チェック
-if ! command -v jq &> /dev/null; then
-  echo '{"decision":"approve","message":"警告: jqが未インストールのため、RLSチェックをスキップしました。brew install jq を推奨。"}'
-  exit 0
-fi
-
-# フックプロファイル対応
+# フックプロファイル対応（セキュリティフックは minimal でもスキップしない）
 PROFILE="${HOOK_PROFILE:-standard}"
-if [ "$PROFILE" = "minimal" ]; then
-  echo '{"decision":"approve"}'
-  exit 0
-fi
 
 INPUT=$(cat)
+source "$(dirname "$0")/_parse-input.sh"
 
 # ファイルパスを取得
-FILE_PATH=$(echo "$INPUT" | jq -r '.tool_input.file_path // ""' 2>/dev/null)
+FILE_PATH=$(_parse_field "$INPUT" "file_path")
 
 # supabase/migrations/ 以外は無視
 if ! echo "$FILE_PATH" | grep -q "supabase/migrations/"; then
@@ -30,7 +20,7 @@ if ! echo "$FILE_PATH" | grep -q "supabase/migrations/"; then
 fi
 
 # 書き込み内容を取得
-CONTENT=$(echo "$INPUT" | jq -r '.tool_input.content // .tool_input.new_string // ""' 2>/dev/null)
+CONTENT=$(_parse_nested_field "$INPUT" "content" "new_string")
 
 # CREATE TABLE があるか
 if echo "$CONTENT" | grep -qiE "CREATE\s+TABLE"; then
