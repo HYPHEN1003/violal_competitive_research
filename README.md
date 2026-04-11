@@ -102,22 +102,24 @@ claude
 | カテゴリ | 数量 | 内容 |
 |---------|------|------|
 | **Agents** | 19個 | code-reviewer, db-architect, designer, ux-writer, qa-tester, prompt-engineer, typescript-reviewer, performance-optimizer, build-error-resolver, e2e-runner, refactor-cleaner, database-reviewer, harness-optimizer, loop-operator, doc-updater, chief-of-staff, image-advisor, youtube-researcher, aidesigner-frontend |
-| **Skills** | 37個 | 下記「スキル一覧」参照 |
+| **Skills** | 39個 | 下記「スキル一覧」参照 |
 | **Rules** | 6個 | api / db / ui / ai / security / integration（パス固有で自動注入） |
 | **Hooks** | 8個 | 下記「フック一覧」参照 |
 | **Templates** | 7個 | プロジェクト仕様書 / 機能仕様書 / HANDOFF / 営業企画書 / 提案サマリー / 提案補足 / 技術調査ログ |
 | **Tests** | 設定済み | Vitest（ユニット）+ Playwright（E2E） |
 | **CI/CD** | 設定済み | GitHub Actions（lint → 型チェック → test → E2E → security audit → build → Lighthouse） |
 
-## スキル一覧（37個）
+## スキル一覧（39個）
 
-### コア開発（4個）
+### コア開発（6個）
 | コマンド | 説明 |
 |---------|------|
 | `/spec-project` | 壁打ちでプロジェクト全体の仕様書を作成 |
 | `/spec-feature` | 壁打ちで機能単位の仕様書を作成 |
 | `/pre-pr-review` | MCO 3AIレビュー（PR作成前） |
 | `/tdd` | RED-GREEN-REFACTORループによるテスト駆動開発 |
+| `/verification-loop` | 6フェーズ品質検証（ビルド・型・Lint・テスト・セキュリティ・diff） |
+| `/eval-harness` | Eval-Driven Development（pass@k / pass^k メトリクス） |
 
 ### デザイン・UI（11個）
 | コマンド | 説明 |
@@ -229,7 +231,7 @@ npm run test:e2e     # E2Eテスト
 
 | Version | Date | Changes |
 |---------|------|---------|
-| v4.3 | 2026-04-11 | DESIGN.md（Google Stitch 9セクション）、recipes/ 導入（document-ingest / document-rag / voice-asr）、docs/dev-environment.md |
+| v4.3 | 2026-04-11 | DESIGN.md（Google Stitch 9セクション）、recipes/ 導入（document-ingest / document-rag / voice-asr）、docs/dev-environment.md、ecc由来スキル 2個（verification-loop / eval-harness、スキル数 37→39） |
 | v4.2 | 2026-04-07 | mkt-*分離(-1.2MB)、jqフェイルクローズ化、キー検出13種(+Anthropic/Google/Vercel)、認証フロー+ダッシュボード雛形、shadcn/ui 5コンポーネント、CI強化(E2E+型チェック+security audit)、Dependabot、next.config.ts移行 |
 | v4.1 | 2026-04-03 | 営業企画書テンプレート・スキル追加、技術調査ログテンプレート、研究駆動開発セクション |
 | v4.0 | 2026-04-01 | ECC由来エージェント10個、Obsidianスキル6個、AI/Security/Integrationルール、フック強化、Bedrock/LlamaCloud(optional)対応 |
