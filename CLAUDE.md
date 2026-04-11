@@ -87,6 +87,7 @@
 <important if="you are creating or modifying UI components, pages, or layouts">
 
 ## デザイン方針
+詳細は **DESIGN.md** を参照（Google Stitch 準拠の9セクション構成）。
 - 方向性: [DESIGN_DIRECTION — 例: モダン・ミニマル、和風、クリニカル等]
 - 背景: [BG_COLOR] （例: #F9F7F3）
 - テキスト: [TEXT_COLOR] （例: #2D2D2D）
