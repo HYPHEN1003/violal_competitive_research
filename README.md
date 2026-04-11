@@ -86,7 +86,12 @@ claude
 │   ├── templates/             ← 仕様書テンプレート（project/feature）
 │   ├── specs/                 ← 生成された仕様書
 │   ├── reviews/               ← MCOレビュー結果
+│   ├── dev-environment.md     ← 推奨開発環境（Ghostty + SAND + worktrees）
 │   └── new-project-guide.md   ← テンプレート活用ガイド
+├── recipes/                   ← オプション機能（案件ごとにオプトイン）
+│   ├── document-ingest/       ← markitdown + opendataloader-pdf
+│   ├── document-rag/          ← PageIndex (vectorless RAG)
+│   └── voice-asr/             ← VibeVoice ASR (optional, GPU)
 ├── prompts/                   ← AIプロンプト設計テンプレート
 ├── design/                    ← デザイン関連リンク
 └── tasks/                     ← タスク管理・教訓記録
@@ -199,13 +204,32 @@ npm run test:e2e     # E2Eテスト
 
 ## マーケティングスキル（別リポジトリ）
 
-マーケティング・営業Ops系スキル（11個）は [hyphen-marketing-skills](https://github.com/HYPHEN1003/hyphen-marketing-skills) に分離しています。
+マーケティング・営業Ops系スキル（15個）は [hyphen-marketing-skills](https://github.com/HYPHEN1003/hyphen-marketing-skills) に分離しています。
 `~/.claude/skills/` にグローバルインストールすれば、どのプロジェクトからでも使用可能。
+
+## Recipes（オプション機能）
+
+案件ごとにオプトインで有効化する重い機能は [`recipes/`](./recipes/) に分離されています。
+
+| Recipe | 用途 | 依存 | 案件例 |
+|--------|------|------|--------|
+| [document-ingest](./recipes/document-ingest/) | ファイル→Markdown/構造化データ変換 | markitdown + opendataloader-pdf | クライアント資料、契約書、マニュアル |
+| [document-rag](./recipes/document-rag/) | 長文書のvectorless推論検索 | PageIndex | 保険約款、技工指示書、作業マニュアル |
+| [voice-asr](./recipes/voice-asr/) | 60分単発の音声認識（多言語） | VibeVoice ASR (GPU) | 商談録音、取材音声、ポッドキャスト |
+
+**設計思想**: core を薄く保ち、重い依存（Java / Python / GPU / MCP権限）は recipe に逃がす。詳細は [recipes/README.md](./recipes/README.md) 参照。
+
+## 開発環境
+
+推奨セットアップ（Ghostty + SANDキーバインド + lazygit + yazi + Git worktrees）は [docs/dev-environment.md](./docs/dev-environment.md) 参照。
+
+マルチClaude Code並列運用や、AIスケール出力に耐える安定ターミナル環境のセットアップ方法を記載。
 
 ## バージョン履歴
 
 | Version | Date | Changes |
 |---------|------|---------|
+| v4.3 | 2026-04-11 | DESIGN.md（Google Stitch 9セクション）、recipes/ 導入（document-ingest / document-rag / voice-asr）、docs/dev-environment.md |
 | v4.2 | 2026-04-07 | mkt-*分離(-1.2MB)、jqフェイルクローズ化、キー検出13種(+Anthropic/Google/Vercel)、認証フロー+ダッシュボード雛形、shadcn/ui 5コンポーネント、CI強化(E2E+型チェック+security audit)、Dependabot、next.config.ts移行 |
 | v4.1 | 2026-04-03 | 営業企画書テンプレート・スキル追加、技術調査ログテンプレート、研究駆動開発セクション |
 | v4.0 | 2026-04-01 | ECC由来エージェント10個、Obsidianスキル6個、AI/Security/Integrationルール、フック強化、Bedrock/LlamaCloud(optional)対応 |
