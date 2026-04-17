@@ -11,11 +11,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet"
-
-const navLinks = [
-  { href: "/dashboard", label: "ダッシュボード" },
-  { href: "/dashboard/settings", label: "設定" },
-]
+import { navLinks } from "@/components/nav-links"
 
 export function MobileSidebar() {
   const [open, setOpen] = useState(false)
@@ -53,4 +49,3 @@ export function MobileSidebar() {
   )
 }
 
-export { navLinks }
