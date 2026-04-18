@@ -7,6 +7,7 @@ import { MyProductCard } from "./_components/my-product-card";
 import { SuggestionCard } from "./_components/suggestion-card";
 import { ResultsTable } from "./_components/results-table";
 import { SearchHistory } from "./_components/search-history";
+import { MonitorSummary } from "./_components/monitor-summary";
 import {
   searchCompetitors,
   loadSearchHistory,
@@ -60,6 +61,16 @@ export default function PriceMonitorPage() {
     handleSearch(fd);
   }
 
+  function handleProductSearch(product: Product) {
+    const fd = new FormData();
+    fd.set("name", product.name);
+    if (product.jan) fd.set("jan", product.jan);
+    handleSearch(fd);
+    setTimeout(() => {
+      window.scrollTo({ top: 400, behavior: "smooth" });
+    }, 100);
+  }
+
   return (
     <div className="space-y-6">
       <div>
@@ -70,6 +81,8 @@ export default function PriceMonitorPage() {
       </div>
 
       <SearchForm onSearch={handleSearch} products={products} />
+
+      <MonitorSummary onProductClick={handleProductSearch} />
 
       {error && (
         <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700">
@@ -93,7 +106,7 @@ export default function PriceMonitorPage() {
             <h3 className="text-base font-semibold">
               競合価格一覧（{result.count}件）
             </h3>
-            <ResultsTable items={result.items} />
+            <ResultsTable items={result.items} myProduct={result.myProduct} />
           </div>
         </>
       )}

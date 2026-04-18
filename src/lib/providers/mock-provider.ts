@@ -12,31 +12,103 @@ interface RawItem {
 
 const DUMMY_CATALOG: { keywords: string[]; items: RawItem[] }[] = [
   {
-    keywords: ["ワイヤレスイヤホン", "イヤホン", "earphone", "4901234567890"],
+    keywords: ["nike air force 1", "air force", "af1", "0883212345001"],
     items: [
-      { mall: "楽天", shop: "サウンドプラスRakuten店", item: "ワイヤレスイヤホン Pro X1 ノイズキャンセリング", price: 9800, shipping: 0, url: "https://example.com/rakuten/x1" },
-      { mall: "楽天", shop: "イヤホン本舗", item: "ワイヤレスイヤホン Pro X1 (新品)", price: 9500, shipping: 550, url: "https://example.com/rakuten/x1-2" },
-      { mall: "Yahoo", shop: "オーディオストアYahoo!店", item: "ワイヤレスイヤホン Pro X1", price: 9300, shipping: 600, url: "https://example.com/yahoo/x1" },
-      { mall: "Yahoo", shop: "ガジェット工房", item: "ワイヤレスイヤホン Pro X1 [送料無料]", price: 10200, shipping: 0, url: "https://example.com/yahoo/x1-2" },
-      { mall: "楽天", shop: "デジタル家電館", item: "Pro X1 ワイヤレスイヤホン (並行輸入)", price: 8900, shipping: 980, url: "https://example.com/rakuten/x1-3" },
+      { mall: "楽天",  shop: "スニーカーハウス楽天店",   item: "Nike Air Force 1 '07 ホワイト CW2288-111", price: 14300, shipping: 0,   url: "https://example.com/rakuten/af1-1" },
+      { mall: "楽天",  shop: "シューズストアABC",         item: "ナイキ エアフォース1 '07 ホワイト 新品",   price: 14800, shipping: 500, url: "https://example.com/rakuten/af1-2" },
+      { mall: "楽天",  shop: "フットロッカー楽天",         item: "Nike AF1 Low ホワイト メンズ",             price: 15100, shipping: 0,   url: "https://example.com/rakuten/af1-3" },
+      { mall: "Yahoo", shop: "スポーツDEPO Yahoo店",      item: "Nike Air Force 1 '07 White",               price: 14500, shipping: 600, url: "https://example.com/yahoo/af1-1" },
+      { mall: "Yahoo", shop: "シューマート",               item: "ナイキ AF1 ロー ホワイト [送料無料]",      price: 15500, shipping: 0,   url: "https://example.com/yahoo/af1-2" },
     ],
   },
   {
-    keywords: ["コーヒーメーカー", "coffee", "4912345678901"],
+    keywords: ["nike air max 90", "air max", "0883212345002"],
     items: [
-      { mall: "楽天", shop: "キッチンランド", item: "全自動コーヒーメーカー CM-300", price: 14800, shipping: 0, url: "https://example.com/rakuten/cm300" },
-      { mall: "楽天", shop: "家電ファクトリー", item: "コーヒーメーカー CM-300 ブラック", price: 14500, shipping: 800, url: "https://example.com/rakuten/cm300-2" },
-      { mall: "Yahoo", shop: "ホームアプライアンス", item: "全自動コーヒーメーカー CM-300 [新品]", price: 13980, shipping: 700, url: "https://example.com/yahoo/cm300" },
-      { mall: "Yahoo", shop: "Cafe Goods Store", item: "CM-300 コーヒーメーカー", price: 15200, shipping: 0, url: "https://example.com/yahoo/cm300-2" },
+      { mall: "楽天",  shop: "シューズプラザ",             item: "Nike Air Max 90 ブラック CN8490-002",      price: 16500, shipping: 300, url: "https://example.com/rakuten/am90-1" },
+      { mall: "楽天",  shop: "アスリートゲート",           item: "ナイキ エアマックス 90 ブラック",           price: 16800, shipping: 0,   url: "https://example.com/rakuten/am90-2" },
+      { mall: "楽天",  shop: "ABC-MART楽天市場店",          item: "Air Max 90 Recraft Black",                  price: 17200, shipping: 500, url: "https://example.com/rakuten/am90-3" },
+      { mall: "Yahoo", shop: "スニーカーベース",           item: "Nike Air Max 90 ブラック メンズ",           price: 16900, shipping: 0,   url: "https://example.com/yahoo/am90-1" },
+      { mall: "Yahoo", shop: "アーバンスポーツ",           item: "ナイキ AM90 ブラック 正規品",               price: 17500, shipping: 600, url: "https://example.com/yahoo/am90-2" },
     ],
   },
   {
-    keywords: ["ロボット掃除機", "掃除機", "robot", "4923456789012"],
+    keywords: ["stan smith", "スタンスミス", "4065427000001"],
     items: [
-      { mall: "楽天", shop: "クリーンライフ", item: "ロボット掃除機 RV-500 マッピング機能搭載", price: 32800, shipping: 0, url: "https://example.com/rakuten/rv500" },
-      { mall: "楽天", shop: "家電プラザ", item: "RV-500 ロボット掃除機", price: 31500, shipping: 1100, url: "https://example.com/rakuten/rv500-2" },
-      { mall: "Yahoo", shop: "スマート家電ストア", item: "RV-500 (国内正規品)", price: 33000, shipping: 0, url: "https://example.com/yahoo/rv500" },
-      { mall: "Yahoo", shop: "リビング・ドット", item: "RV-500 ロボット掃除機 ホワイト", price: 30900, shipping: 1500, url: "https://example.com/yahoo/rv500-2" },
+      { mall: "楽天",  shop: "アディダス楽天ストア",       item: "adidas Stan Smith Primegreen ホワイト",     price: 13000, shipping: 0,   url: "https://example.com/rakuten/ss-1" },
+      { mall: "楽天",  shop: "スニーカーディレクト",       item: "スタンスミス ホワイト/グリーン",            price: 12700, shipping: 500, url: "https://example.com/rakuten/ss-2" },
+      { mall: "楽天",  shop: "シューズセレクト",           item: "adidas Originals Stan Smith",               price: 13400, shipping: 0,   url: "https://example.com/rakuten/ss-3" },
+      { mall: "Yahoo", shop: "フットギア Yahoo店",         item: "Stan Smith Core White",                     price: 13100, shipping: 300, url: "https://example.com/yahoo/ss-1" },
+      { mall: "Yahoo", shop: "ストリートスタイル",         item: "アディダス スタンスミス 定番",              price: 13800, shipping: 0,   url: "https://example.com/yahoo/ss-2" },
+    ],
+  },
+  {
+    keywords: ["samba", "サンバ", "4065427000002"],
+    items: [
+      { mall: "楽天",  shop: "スニーカー倉庫",             item: "adidas Samba OG ブラック/ホワイト",         price: 15800, shipping: 500, url: "https://example.com/rakuten/samba-1" },
+      { mall: "楽天",  shop: "トレンドスニーカー",         item: "サンバ OG コアブラック",                    price: 16500, shipping: 0,   url: "https://example.com/rakuten/samba-2" },
+      { mall: "楽天",  shop: "スポーツワン",               item: "adidas Samba OG Black 国内正規",            price: 17200, shipping: 0,   url: "https://example.com/rakuten/samba-3" },
+      { mall: "Yahoo", shop: "スニーカーロフト",           item: "サンバ OG ブラック メンズ",                 price: 16000, shipping: 500, url: "https://example.com/yahoo/samba-1" },
+      { mall: "Yahoo", shop: "シューズBOX",                 item: "adidas Samba OG 人気モデル",                price: 17000, shipping: 600, url: "https://example.com/yahoo/samba-2" },
+    ],
+  },
+  {
+    keywords: ["new balance 574", "nb574", "0739980012345"],
+    items: [
+      { mall: "楽天",  shop: "ニューバランス楽天",         item: "New Balance ML574 グレー",                  price: 11500, shipping: 0,   url: "https://example.com/rakuten/nb574-1" },
+      { mall: "楽天",  shop: "スニーカーパーク",           item: "ニューバランス 574 Classic グレー",         price: 11800, shipping: 300, url: "https://example.com/rakuten/nb574-2" },
+      { mall: "楽天",  shop: "ABC シューズ",                item: "NB 574 Core Grey EVG",                      price: 12300, shipping: 0,   url: "https://example.com/rakuten/nb574-3" },
+      { mall: "Yahoo", shop: "フットプラネット",           item: "New Balance 574 Grey メンズ",               price: 11700, shipping: 0,   url: "https://example.com/yahoo/nb574-1" },
+      { mall: "Yahoo", shop: "スポーツマート",             item: "ニューバランス ML574 定番グレー",           price: 12500, shipping: 500, url: "https://example.com/yahoo/nb574-2" },
+    ],
+  },
+  {
+    keywords: ["new balance 996", "nb996", "0739980012346"],
+    items: [
+      { mall: "楽天",  shop: "プレミアムシューズ",         item: "New Balance 996 ネイビー MRL996",           price: 19500, shipping: 0,   url: "https://example.com/rakuten/nb996-1" },
+      { mall: "楽天",  shop: "シューズセレクション",       item: "ニューバランス 996 ネイビー",               price: 19800, shipping: 500, url: "https://example.com/rakuten/nb996-2" },
+      { mall: "楽天",  shop: "スニーカーラボ",             item: "NB MRL996 Navy メンズ/レディース",          price: 20200, shipping: 0,   url: "https://example.com/rakuten/nb996-3" },
+      { mall: "Yahoo", shop: "フットウェアジャパン",       item: "New Balance 996 Navy Classic",              price: 19300, shipping: 600, url: "https://example.com/yahoo/nb996-1" },
+      { mall: "Yahoo", shop: "スニーカーエージェント",     item: "ニューバランス 996 NV 人気モデル",          price: 20500, shipping: 0,   url: "https://example.com/yahoo/nb996-2" },
+    ],
+  },
+  {
+    keywords: ["all star", "converse", "オールスター", "コンバース", "4549643000001"],
+    items: [
+      { mall: "楽天",  shop: "コンバース楽天店",           item: "Converse All Star HI ホワイト",             price: 7500, shipping: 0,   url: "https://example.com/rakuten/allstar-1" },
+      { mall: "楽天",  shop: "スニーカーマニア",           item: "コンバース オールスター ハイ ホワイト",     price: 7200, shipping: 300, url: "https://example.com/rakuten/allstar-2" },
+      { mall: "楽天",  shop: "シューズファクトリー",       item: "Converse CT70 Hi White",                    price: 7800, shipping: 0,   url: "https://example.com/rakuten/allstar-3" },
+      { mall: "Yahoo", shop: "カジュアルシューズ館",       item: "オールスター ハイカット ホワイト",          price: 7400, shipping: 300, url: "https://example.com/yahoo/allstar-1" },
+      { mall: "Yahoo", shop: "靴のヒラキYahoo店",          item: "Converse All Star レギュラー HI",           price: 7900, shipping: 0,   url: "https://example.com/yahoo/allstar-2" },
+    ],
+  },
+  {
+    keywords: ["vans old skool", "old skool", "オールドスクール", "vans", "0191163000001"],
+    items: [
+      { mall: "楽天",  shop: "ヴァンズ公式楽天",           item: "Vans Old Skool ブラック/ホワイト",          price: 9700, shipping: 0,   url: "https://example.com/rakuten/vans-1" },
+      { mall: "楽天",  shop: "スケーターショップ",         item: "バンズ オールドスクール 定番",              price: 9400, shipping: 500, url: "https://example.com/rakuten/vans-2" },
+      { mall: "楽天",  shop: "スニーカーブティック",       item: "VANS Old Skool Classic Black/White",        price: 10100, shipping: 0,   url: "https://example.com/rakuten/vans-3" },
+      { mall: "Yahoo", shop: "ストリートシューズ",         item: "Vans Old Skool BLK/WHT メンズ",             price: 9500, shipping: 300, url: "https://example.com/yahoo/vans-1" },
+      { mall: "Yahoo", shop: "アーバンフット",             item: "バンズ オールドスクール 人気",              price: 10200, shipping: 0,   url: "https://example.com/yahoo/vans-2" },
+    ],
+  },
+  {
+    keywords: ["gel-kayano", "kayano", "ゲルカヤノ", "カヤノ", "asics", "4550456000001"],
+    items: [
+      { mall: "楽天",  shop: "アシックス楽天店",           item: "asics GEL-KAYANO 30 メンズ",                price: 21000, shipping: 0,   url: "https://example.com/rakuten/kayano-1" },
+      { mall: "楽天",  shop: "ランニング専門店RunRun",     item: "ゲルカヤノ30 ランニング メンズ",            price: 21500, shipping: 500, url: "https://example.com/rakuten/kayano-2" },
+      { mall: "楽天",  shop: "スポーツオーソリティ楽天",   item: "ASICS GEL-KAYANO 30 Running",               price: 22800, shipping: 0,   url: "https://example.com/rakuten/kayano-3" },
+      { mall: "Yahoo", shop: "ランナーズショップ",         item: "アシックス ゲルカヤノ30 正規品",            price: 21300, shipping: 300, url: "https://example.com/yahoo/kayano-1" },
+      { mall: "Yahoo", shop: "フィットネスストア",         item: "GEL-KAYANO 30 Men's ランシュー",            price: 22500, shipping: 0,   url: "https://example.com/yahoo/kayano-2" },
+    ],
+  },
+  {
+    keywords: ["puma suede", "suede classic", "プーマ スウェード", "スウェード", "4064536000001"],
+    items: [
+      { mall: "楽天",  shop: "プーマ公式楽天",             item: "PUMA Suede Classic XXI ブラック",           price: 10000, shipping: 0,   url: "https://example.com/rakuten/puma-1" },
+      { mall: "楽天",  shop: "スニーカーカンパニー",       item: "プーマ スウェード クラシック",              price: 10300, shipping: 300, url: "https://example.com/rakuten/puma-2" },
+      { mall: "楽天",  shop: "シューズアウトレット",       item: "PUMA Suede Classic+",                       price: 10500, shipping: 0,   url: "https://example.com/rakuten/puma-3" },
+      { mall: "Yahoo", shop: "カジュアルフット",           item: "プーマ Suede Classic メンズ",               price: 10200, shipping: 300, url: "https://example.com/yahoo/puma-1" },
+      { mall: "Yahoo", shop: "ストリートブランド",         item: "PUMA スウェード 定番モデル",                price: 10700, shipping: 0,   url: "https://example.com/yahoo/puma-2" },
     ],
   },
 ];

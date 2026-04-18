@@ -117,3 +117,53 @@ export async function loadProducts(): Promise<Product[]> {
 
   return (data ?? []) as Product[];
 }
+
+export interface MonitorSummary {
+  totalMonitored: number;
+  counts: {
+    urgent: number;
+    recommend: number;
+    monitor: number;
+    good: number;
+  };
+  lastCheckedAt: string | null;
+}
+
+export async function loadProductsByLevel(
+  level: "urgent" | "recommend" | "monitor" | "good"
+): Promise<Product[]> {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("products")
+    .select("*")
+    .eq("is_monitored", true)
+    .eq("last_suggestion_level", level)
+    .order("sales_rank");
+  return (data ?? []) as Product[];
+}
+
+export async function loadMonitorSummary(): Promise<MonitorSummary> {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("products")
+    .select("last_suggestion_level, last_checked_at")
+    .eq("is_monitored", true);
+
+  const counts = { urgent: 0, recommend: 0, monitor: 0, good: 0 };
+  let latestDate: Date | null = null;
+
+  (data ?? []).forEach((p) => {
+    const level = p.last_suggestion_level as keyof typeof counts | null;
+    if (level && level in counts) counts[level]++;
+    if (p.last_checked_at) {
+      const d = new Date(p.last_checked_at);
+      if (!latestDate || d > latestDate) latestDate = d;
+    }
+  });
+
+  return {
+    totalMonitored: data?.length ?? 0,
+    counts,
+    lastCheckedAt: latestDate ? latestDate.toISOString() : null,
+  };
+}
