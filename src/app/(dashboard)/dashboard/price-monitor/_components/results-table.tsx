@@ -37,8 +37,17 @@ export function ResultsTable({ items, myProduct }: ResultsTableProps) {
       ].sort((a, b) => a.effective_price - b.effective_price)
     : items.slice().sort((a, b) => a.effective_price - b.effective_price);
 
-  // 全件に順位を付与
-  const ranked: DisplayItem[] = merged.map((item, i) => ({ ...item, rank: i + 1 }));
+  // 全件に順位を付与（実質価格が同じなら同順位、次は件数ぶんスキップする標準競争順位: 1,2,2,4）
+  const ranked: DisplayItem[] = [];
+  let prevPrice: number | null = null;
+  let prevRank = 0;
+  merged.forEach((item, i) => {
+    const rank =
+      prevPrice !== null && item.effective_price === prevPrice ? prevRank : i + 1;
+    ranked.push({ ...item, rank });
+    prevPrice = item.effective_price;
+    prevRank = rank;
+  });
 
   if (ranked.length === 0) {
     return (
@@ -51,13 +60,21 @@ export function ResultsTable({ items, myProduct }: ResultsTableProps) {
   const selfItem = ranked.find((x) => x.isSelf);
   const selfRank = selfItem?.rank ?? null;
   const hasMoreBeyondTen = ranked.length > 10;
-  const selfBeyondTen = selfRank != null && selfRank > 10;
 
   // 表示対象の行を決定
+  // 自社行は「必ず」表示するため、top10 スライスに含まれていなければ末尾に付け足す。
+  // 同率順位があると配列インデックスと rank がずれる場合があるので、rank比較ではなく配列実在で判定。
   let displayItems: DisplayItem[];
+  let selfAppended = false;
   if (tab === "top") {
     const top10 = ranked.slice(0, 10);
-    displayItems = selfBeyondTen && selfItem ? [...top10, selfItem] : top10;
+    const selfInTop10 = selfItem ? top10.includes(selfItem) : true;
+    if (selfItem && !selfInTop10) {
+      displayItems = [...top10, selfItem];
+      selfAppended = true;
+    } else {
+      displayItems = top10;
+    }
   } else {
     displayItems = ranked;
   }
@@ -69,7 +86,7 @@ export function ResultsTable({ items, myProduct }: ResultsTableProps) {
       {hasMoreBeyondTen && (
         <div className="flex border-b">
           <TabButton active={tab === "top"} onClick={() => setTab("top")}>
-            上位10件{selfBeyondTen ? " + 自社" : ""}
+            上位10件{selfAppended ? " + 自社" : ""}
           </TabButton>
           <TabButton active={tab === "all"} onClick={() => setTab("all")}>
             全件表示（{ranked.length}件）
@@ -77,7 +94,7 @@ export function ResultsTable({ items, myProduct }: ResultsTableProps) {
         </div>
       )}
 
-      {selfBeyondTen && tab === "top" && (
+      {selfAppended && tab === "top" && (
         <p className="text-xs text-muted-foreground">
           自社は <span className="font-semibold text-indigo-700">{selfRank}位</span>。参考として末尾に表示しています。
         </p>
@@ -103,7 +120,7 @@ export function ResultsTable({ items, myProduct }: ResultsTableProps) {
               const isSelf = item.isSelf === true;
               // 上位10件タブで自社を末尾に付け足す場合のみ、境界線を強調
               const isAppendedSelf =
-                tab === "top" && isSelf && selfBeyondTen && idx === displayItems.length - 1;
+                tab === "top" && isSelf && selfAppended && idx === displayItems.length - 1;
 
               let rowBg = "";
               if (isSelf && isBest) rowBg = "bg-indigo-100 hover:bg-indigo-200";
@@ -113,7 +130,7 @@ export function ResultsTable({ items, myProduct }: ResultsTableProps) {
 
               return (
                 <tr
-                  key={item.rank}
+                  key={`${item.rank}-${item.mall}-${item.shop_name}-${idx}`}
                   className={`border-b ${rowBg} ${isAppendedSelf ? "border-t-2 border-t-indigo-300" : ""}`}
                 >
                   <td

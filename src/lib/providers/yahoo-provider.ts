@@ -1,65 +1,43 @@
 import type { PriceProvider } from "./types";
 import type { CompetitorItem, SearchQuery } from "@/types/price-monitor";
 
-export const yahooProvider: PriceProvider = {
-  async fetchPrices(query: SearchQuery): Promise<CompetitorItem[]> {
-    const clientId = process.env.YAHOO_CLIENT_ID;
-    if (!clientId) throw new Error("YAHOO_CLIENT_ID が設定されていません");
+const USED_NAME_PATTERN = /(中古|USED|ユーズド|リユース|フリマ|ジャンク|訳あり|難あり|使用済|古着|汚れ|よごれ|ヨゴレ|キズあり|傷あり)/i;
+// 靴アクセサリ・ケア用品・書籍・玩具など汎用ノイズのみ。violal 商品カテゴリ（Tシャツ/バッグ/ウェア等）
+// と衝突する語は削除済み（旧シューズ案件の名残）。将来シューズ系SKUを再投入してアパレル系と混在させる
+// 場合は、SearchQuery.category を追加してカテゴリ別 NOISE に分岐する（候補B）。
+const NOISE_NAME_PATTERN = /(靴紐|シューレース|シューキーパー|シューツリー|シューケア|クリーナー|洗剤|防水スプレー|消臭|撥水|インソール|中敷き?|靴クリーム|ワックス|ポリッシュ|艶出し|ソックス|靴下|キーホルダー|ステッカー|ピンバッジ|マスク|ハンガー|シュータン|保護|スプレー|ゴルフマーカー|マーカー|フィギュア|模型|ミニチュア|おまけ|景品|DVD|Blu-?ray|BD|CD|書籍|雑誌|ブック|MOOK|ムック|BOOK|レコード|ヴァイナル|アナログ盤|ボール|ラケット|氷のう|アイスパック|保冷剤|色焼け|見切り品|返品不可|キッズ|ジュニア|子ども|子供|こども|ベビー|赤ちゃん|男児|女児|少年|少女)/i;
+// 子ども・ベビーサイズを示すパターン（例: 12-16, 12-165, 17-22, 17.0〜21.0cm）
+const KIDS_SIZE_PATTERN = /(\b(1[0-9]|2[0-2])\s?[-～〜~]\s?(1[0-9]{1,2}|2[0-2])\b|\b1[0-9]\.[0-9]\s?[～〜~]\s?2[0-2]\.[0-9]\b)/;
+// violal 自身の Yahoo 出品（"VIOLAL BAG&LUGGAGE ヤフー店" 等）は自社なので競合から除外
+const SELF_SELLER_PATTERN = /violal/i;
 
-    const params = new URLSearchParams({
-      appid: clientId,
-      results: "30",
-      sort: "+price",
-      output: "json",
-      condition: "new",
-    });
+// name フォールバック時の誤マッチ（版違い等）対策。クエリ商品名の先頭5語を「必須トークン」として、
+// それらを全て含む出品のみを残す。例: "Salomon AERO GLIDE 4 GRVL ..." のとき「AERO GLIDE 3 GRVL」は "4" が無いため除外。
+function strictTokenMatchFilter<T extends { item_name: string }>(items: T[], queryName: string): T[] {
+  const tokens = queryName
+    .trim()
+    .split(/\s+/)
+    .slice(0, 5)
+    .map((t) => t.toLowerCase())
+    .filter((t) => t.length > 0);
+  if (tokens.length === 0) return items;
+  return items.filter((item) => {
+    const lower = item.item_name.toLowerCase();
+    return tokens.every((tok) => lower.includes(tok));
+  });
+}
 
-    // JAN > ブランド+品番 > 商品名 の優先順位。
-    // 正規取扱店・大手EC店は型番をタイトルに含めることが多く、型番検索の方がノイズが少ない。
-    // 商品名はフォールバック。
-    if (query.jan) {
-      params.set("jan_code", query.jan);
-    } else if (query.brand && query.model) {
-      params.set("query", `${query.brand} ${query.model}`);
-    } else if (query.name) {
-      params.set("query", query.name);
-    } else {
-      return [];
-    }
-
-    const USED_NAME_PATTERN = /(中古|USED|ユーズド|リユース|フリマ|ジャンク|訳あり|難あり|使用済|古着|汚れ|よごれ|ヨゴレ|キズあり|傷あり)/i;
-    // 関連アクセサリ・ケア用品・衣類など「靴本体でない」ノイズを除外
-    // 靴アクセサリ・ケア用品・書籍・玩具など汎用ノイズのみ。violal 商品カテゴリ（Tシャツ/バッグ/ウェア等）
-    // と衝突する語は削除済み（旧シューズ案件の名残）。将来シューズ系SKUを再投入してアパレル系と混在させる
-    // 場合は、SearchQuery.category を追加してカテゴリ別 NOISE に分岐する（候補B）。
-    const NOISE_NAME_PATTERN = /(靴紐|シューレース|シューキーパー|シューツリー|シューケア|クリーナー|洗剤|防水スプレー|消臭|撥水|インソール|中敷き?|靴クリーム|ワックス|ポリッシュ|艶出し|ソックス|靴下|キーホルダー|ステッカー|ピンバッジ|マスク|ハンガー|シュータン|保護|スプレー|ゴルフマーカー|マーカー|フィギュア|模型|ミニチュア|おまけ|景品|DVD|Blu-?ray|BD|CD|書籍|雑誌|ブック|MOOK|ムック|BOOK|レコード|ヴァイナル|アナログ盤|ボール|ラケット|氷のう|アイスパック|保冷剤|色焼け|見切り品|返品不可|キッズ|ジュニア|子ども|子供|こども|ベビー|赤ちゃん|男児|女児|少年|少女)/i;
-    // 子ども・ベビーサイズを示すパターン（例: 12-16, 12-165, 17-22, 17.0〜21.0cm）
-    const KIDS_SIZE_PATTERN = /(\b(1[0-9]|2[0-2])\s?[-～〜~]\s?(1[0-9]{1,2}|2[0-2])\b|\b1[0-9]\.[0-9]\s?[～〜~]\s?2[0-2]\.[0-9]\b)/;
-
-    const res = await fetch(
-      `https://shopping.yahooapis.jp/ShoppingWebService/V3/itemSearch?${params}`
-    );
-
-    if (!res.ok) {
-      throw new Error(`Yahoo API エラー: ${res.status} ${res.statusText}`);
-    }
-
-    const json = await res.json();
-    const hits: Array<Record<string, unknown>> = json.hits ?? [];
-
-    // violal 自身の Yahoo 出品（"VIOLAL BAG&LUGGAGE ヤフー店" 等）は自社なので競合から除外
-    const SELF_SELLER_PATTERN = /violal/i;
-
-    return hits
-      .filter((it) => {
-        const name = String(it.name ?? "");
-        const sellerName = String((it.seller as Record<string, unknown>)?.name ?? "");
-        if (SELF_SELLER_PATTERN.test(sellerName) || SELF_SELLER_PATTERN.test(name)) return false;
-        return !USED_NAME_PATTERN.test(name)
-          && !NOISE_NAME_PATTERN.test(name)
-          && !KIDS_SIZE_PATTERN.test(name);
-      })
-      .map((it) => {
+function toCompetitorItems(hits: Array<Record<string, unknown>>): CompetitorItem[] {
+  return hits
+    .filter((it) => {
+      const name = String(it.name ?? "");
+      const sellerName = String((it.seller as Record<string, unknown>)?.name ?? "");
+      if (SELF_SELLER_PATTERN.test(sellerName) || SELF_SELLER_PATTERN.test(name)) return false;
+      return !USED_NAME_PATTERN.test(name)
+        && !NOISE_NAME_PATTERN.test(name)
+        && !KIDS_SIZE_PATTERN.test(name);
+    })
+    .map((it) => {
       const price = Number(it.price) || 0;
       const shippingRaw = it.shipping as Record<string, unknown> | undefined;
       const shippingName = shippingRaw?.name ? String(shippingRaw.name) : null;
@@ -79,5 +57,53 @@ export const yahooProvider: PriceProvider = {
         url: String(it.url ?? ""),
       };
     });
+}
+
+export const yahooProvider: PriceProvider = {
+  async fetchPrices(query: SearchQuery): Promise<CompetitorItem[]> {
+    const clientId = process.env.YAHOO_CLIENT_ID;
+    if (!clientId) throw new Error("YAHOO_CLIENT_ID が設定されていません");
+
+    async function runSearch(paramOverrides: Record<string, string>): Promise<CompetitorItem[]> {
+      const params = new URLSearchParams({
+        appid: clientId!,
+        results: "30",
+        sort: "+price",
+        output: "json",
+        condition: "new",
+        ...paramOverrides,
+      });
+      const res = await fetch(
+        `https://shopping.yahooapis.jp/ShoppingWebService/V3/itemSearch?${params}`
+      );
+      if (!res.ok) {
+        throw new Error(`Yahoo API エラー: ${res.status} ${res.statusText}`);
+      }
+      const json = await res.json();
+      const hits: Array<Record<string, unknown>> = json.hits ?? [];
+      return toCompetitorItems(hits);
+    }
+
+    // 優先順位: JAN > ブランド+型番 > 商品名
+    // 型番検索で他店0件の場合は、商品名に自動フォールバック（型番がブランド独自体系で他店タイトルにない場合の救済）
+    if (query.jan) {
+      return runSearch({ jan_code: query.jan });
+    }
+
+    if (query.brand && query.model) {
+      const byModel = await runSearch({ query: `${query.brand} ${query.model}` });
+      if (byModel.length > 0) return byModel;
+      if (query.name) {
+        const byName = await runSearch({ query: query.name });
+        return strictTokenMatchFilter(byName, query.name);
+      }
+      return [];
+    }
+
+    if (query.name) {
+      return runSearch({ query: query.name });
+    }
+
+    return [];
   },
 };

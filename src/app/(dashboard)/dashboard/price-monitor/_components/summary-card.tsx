@@ -11,6 +11,8 @@ export function SummaryCard({ result, queryName, queryJan }: SummaryCardProps) {
   const queryParts: string[] = [];
   if (queryName) queryParts.push(`商品名: ${queryName}`);
   if (queryJan) queryParts.push(`JAN: ${queryJan}`);
+  if (result.myProduct?.brand) queryParts.push(`ブランド: ${result.myProduct.brand}`);
+  if (result.myProduct?.model) queryParts.push(`品番: ${result.myProduct.model}`);
 
   return (
     <Card>
