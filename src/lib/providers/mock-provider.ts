@@ -10,105 +10,106 @@ interface RawItem {
   url: string;
 }
 
+// violal 社の10商品に対応。各SKUの楽天側最安は last_suggestion_level と整合するよう設定。
 const DUMMY_CATALOG: { keywords: string[]; items: RawItem[] }[] = [
+  // SKU-001 innovator INV43EX スーツケース 38+5L (my 24,800, urgent → anchor 22,000)
   {
-    keywords: ["nike air force 1", "air force", "af1", "0883212345001"],
+    keywords: ["inv43ex", "innovator inv43", "inv43"],
     items: [
-      { mall: "楽天",  shop: "スニーカーハウス楽天店",   item: "Nike Air Force 1 '07 ホワイト CW2288-111", price: 14300, shipping: 0,   url: "https://example.com/rakuten/af1-1" },
-      { mall: "楽天",  shop: "シューズストアABC",         item: "ナイキ エアフォース1 '07 ホワイト 新品",   price: 14800, shipping: 500, url: "https://example.com/rakuten/af1-2" },
-      { mall: "楽天",  shop: "フットロッカー楽天",         item: "Nike AF1 Low ホワイト メンズ",             price: 15100, shipping: 0,   url: "https://example.com/rakuten/af1-3" },
-      { mall: "Yahoo", shop: "スポーツDEPO Yahoo店",      item: "Nike Air Force 1 '07 White",               price: 14500, shipping: 600, url: "https://example.com/yahoo/af1-1" },
-      { mall: "Yahoo", shop: "シューマート",               item: "ナイキ AF1 ロー ホワイト [送料無料]",      price: 15500, shipping: 0,   url: "https://example.com/yahoo/af1-2" },
+      { mall: "楽天",  shop: "innovatorStore楽天店",       item: "innovator エキスパンダブル 38+5L INV43EX ブラック", price: 22000, shipping: 0,   url: "https://example.com/rakuten/inv43-1" },
+      { mall: "楽天",  shop: "キャリーケース専門店",       item: "innovator INV43EX スーツケース 機内持込",            price: 22500, shipping: 0,   url: "https://example.com/rakuten/inv43-2" },
+      { mall: "楽天",  shop: "トラベルショップA",           item: "イノベーター INV43EX グレー 38L",                    price: 23200, shipping: 500, url: "https://example.com/rakuten/inv43-3" },
+      { mall: "Yahoo", shop: "スーツケース館 Yahoo店",     item: "innovator INV43EX エキスパンダブル 38+5L",          price: 22300, shipping: 0,   url: "https://example.com/yahoo/inv43-1" },
+      { mall: "Yahoo", shop: "旅行用品ストア",             item: "イノベーター INV43 38L 拡張可能",                    price: 23500, shipping: 0,   url: "https://example.com/yahoo/inv43-2" },
     ],
   },
+  // SKU-002 innovator IW66 CARRY WAGON 75L (my 18,800, recommend → anchor 17,700)
   {
-    keywords: ["nike air max 90", "air max", "0883212345002"],
+    keywords: ["iw66", "innovator iw66", "carry wagon", "innovator 75l"],
     items: [
-      { mall: "楽天",  shop: "シューズプラザ",             item: "Nike Air Max 90 ブラック CN8490-002",      price: 16500, shipping: 300, url: "https://example.com/rakuten/am90-1" },
-      { mall: "楽天",  shop: "アスリートゲート",           item: "ナイキ エアマックス 90 ブラック",           price: 16800, shipping: 0,   url: "https://example.com/rakuten/am90-2" },
-      { mall: "楽天",  shop: "ABC-MART楽天市場店",          item: "Air Max 90 Recraft Black",                  price: 17200, shipping: 500, url: "https://example.com/rakuten/am90-3" },
-      { mall: "Yahoo", shop: "スニーカーベース",           item: "Nike Air Max 90 ブラック メンズ",           price: 16900, shipping: 0,   url: "https://example.com/yahoo/am90-1" },
-      { mall: "Yahoo", shop: "アーバンスポーツ",           item: "ナイキ AM90 ブラック 正規品",               price: 17500, shipping: 600, url: "https://example.com/yahoo/am90-2" },
+      { mall: "楽天",  shop: "innovatorStore楽天店",       item: "innovator IW66 CARRY WAGON 75L ブラック",           price: 17700, shipping: 0,   url: "https://example.com/rakuten/iw66-1" },
+      { mall: "楽天",  shop: "キャリーケース専門店",       item: "イノベーター IW66 Mサイズ 75L",                      price: 18000, shipping: 0,   url: "https://example.com/rakuten/iw66-2" },
+      { mall: "楽天",  shop: "トラベルショップB",           item: "innovator CARRY WAGON 75L ネイビー",                price: 18500, shipping: 0,   url: "https://example.com/rakuten/iw66-3" },
+      { mall: "Yahoo", shop: "旅行用品ストア",             item: "イノベーター IW66 CARRY WAGON",                      price: 17900, shipping: 0,   url: "https://example.com/yahoo/iw66-1" },
+      { mall: "Yahoo", shop: "スーツケース館 Yahoo店",     item: "innovator 75L スーツケース IW66",                    price: 18700, shipping: 0,   url: "https://example.com/yahoo/iw66-2" },
     ],
   },
+  // SKU-003 Salomon L49174 AERO GLIDE 4 GRVL (my 19,800, recommend → anchor 18,700)
   {
-    keywords: ["stan smith", "スタンスミス", "4065427000001"],
+    keywords: ["l49174", "salomon l49174", "aero glide 4", "aero glide"],
     items: [
-      { mall: "楽天",  shop: "アディダス楽天ストア",       item: "adidas Stan Smith Primegreen ホワイト",     price: 13000, shipping: 0,   url: "https://example.com/rakuten/ss-1" },
-      { mall: "楽天",  shop: "スニーカーディレクト",       item: "スタンスミス ホワイト/グリーン",            price: 12700, shipping: 500, url: "https://example.com/rakuten/ss-2" },
-      { mall: "楽天",  shop: "シューズセレクト",           item: "adidas Originals Stan Smith",               price: 13400, shipping: 0,   url: "https://example.com/rakuten/ss-3" },
-      { mall: "Yahoo", shop: "フットギア Yahoo店",         item: "Stan Smith Core White",                     price: 13100, shipping: 300, url: "https://example.com/yahoo/ss-1" },
-      { mall: "Yahoo", shop: "ストリートスタイル",         item: "アディダス スタンスミス 定番",              price: 13800, shipping: 0,   url: "https://example.com/yahoo/ss-2" },
+      { mall: "楽天",  shop: "サロモン楽天店",             item: "Salomon AERO GLIDE 4 GRVL L49174 メンズ",           price: 18700, shipping: 0,   url: "https://example.com/rakuten/l49174-1" },
+      { mall: "楽天",  shop: "ランニング専門Run",          item: "サロモン エアロ グライド 4 GRVL",                   price: 19000, shipping: 0,   url: "https://example.com/rakuten/l49174-2" },
+      { mall: "楽天",  shop: "スポーツオーソリティ楽天",   item: "Salomon L49174 GRVL ランニングシューズ",            price: 19500, shipping: 0,   url: "https://example.com/rakuten/l49174-3" },
+      { mall: "Yahoo", shop: "アウトドア専門店",           item: "サロモン AERO GLIDE 4 国内正規",                     price: 18900, shipping: 0,   url: "https://example.com/yahoo/l49174-1" },
+      { mall: "Yahoo", shop: "フィットネスストア",         item: "Salomon Aero Glide 4 GRVL 27.0cm",                   price: 19700, shipping: 0,   url: "https://example.com/yahoo/l49174-2" },
     ],
   },
+  // SKU-004 Salomon L47987 XA PRO 3D V9 GTX (my 24,500, urgent → anchor 21,700)
   {
-    keywords: ["samba", "サンバ", "4065427000002"],
+    keywords: ["l47987", "salomon l47987", "xa pro 3d v9", "xa pro 3d"],
     items: [
-      { mall: "楽天",  shop: "スニーカー倉庫",             item: "adidas Samba OG ブラック/ホワイト",         price: 15800, shipping: 500, url: "https://example.com/rakuten/samba-1" },
-      { mall: "楽天",  shop: "トレンドスニーカー",         item: "サンバ OG コアブラック",                    price: 16500, shipping: 0,   url: "https://example.com/rakuten/samba-2" },
-      { mall: "楽天",  shop: "スポーツワン",               item: "adidas Samba OG Black 国内正規",            price: 17200, shipping: 0,   url: "https://example.com/rakuten/samba-3" },
-      { mall: "Yahoo", shop: "スニーカーロフト",           item: "サンバ OG ブラック メンズ",                 price: 16000, shipping: 500, url: "https://example.com/yahoo/samba-1" },
-      { mall: "Yahoo", shop: "シューズBOX",                 item: "adidas Samba OG 人気モデル",                price: 17000, shipping: 600, url: "https://example.com/yahoo/samba-2" },
+      { mall: "楽天",  shop: "サロモン楽天店",             item: "Salomon XA PRO 3D V9 GTX L47987 メンズ",            price: 21700, shipping: 0,   url: "https://example.com/rakuten/l47987-1" },
+      { mall: "楽天",  shop: "トレイルランショップ",       item: "サロモン XA PRO 3D V9 GTX Gore-Tex",                 price: 22000, shipping: 0,   url: "https://example.com/rakuten/l47987-2" },
+      { mall: "楽天",  shop: "アウトドアファクトリー",     item: "Salomon L47987 XA PRO 3D V9 国内正規",               price: 22500, shipping: 0,   url: "https://example.com/rakuten/l47987-3" },
+      { mall: "Yahoo", shop: "ランナーズショップ",         item: "サロモン XA PRO 3D V9 GTX トレイルラン",             price: 21900, shipping: 0,   url: "https://example.com/yahoo/l47987-1" },
+      { mall: "Yahoo", shop: "アウトドア専門店",           item: "Salomon L47987 Gore-Tex 27.5cm",                     price: 22800, shipping: 0,   url: "https://example.com/yahoo/l47987-2" },
     ],
   },
+  // SKU-005 / SKU-006 Columbia WR7658 Spire Valley (共有モデル — anchor 9,950 で両方をカバー)
+  //   SKU-005 my 10,200 monitor, SKU-006 my 9,700 good
   {
-    keywords: ["new balance 574", "nb574", "0739980012345"],
+    keywords: ["wr7658", "columbia wr7658", "spire valley", "スパイアーバレー"],
     items: [
-      { mall: "楽天",  shop: "ニューバランス楽天",         item: "New Balance ML574 グレー",                  price: 11500, shipping: 0,   url: "https://example.com/rakuten/nb574-1" },
-      { mall: "楽天",  shop: "スニーカーパーク",           item: "ニューバランス 574 Classic グレー",         price: 11800, shipping: 300, url: "https://example.com/rakuten/nb574-2" },
-      { mall: "楽天",  shop: "ABC シューズ",                item: "NB 574 Core Grey EVG",                      price: 12300, shipping: 0,   url: "https://example.com/rakuten/nb574-3" },
-      { mall: "Yahoo", shop: "フットプラネット",           item: "New Balance 574 Grey メンズ",               price: 11700, shipping: 0,   url: "https://example.com/yahoo/nb574-1" },
-      { mall: "Yahoo", shop: "スポーツマート",             item: "ニューバランス ML574 定番グレー",           price: 12500, shipping: 500, url: "https://example.com/yahoo/nb574-2" },
+      { mall: "楽天",  shop: "コロンビア楽天",             item: "Columbia Spire Valley WR7658 ブラック L",           price: 9950,  shipping: 0,   url: "https://example.com/rakuten/wr7658-1" },
+      { mall: "楽天",  shop: "アウトドアストア",           item: "コロンビア スパイアーバレー ウィンドブレーカー",     price: 10100, shipping: 0,   url: "https://example.com/rakuten/wr7658-2" },
+      { mall: "楽天",  shop: "スポーツデポ楽天",           item: "Columbia WR7658 ジャケット メンズ",                  price: 10400, shipping: 0,   url: "https://example.com/rakuten/wr7658-3" },
+      { mall: "Yahoo", shop: "アウトドアYahoo",             item: "Columbia スパイアーバレー ネイビー",                 price: 10050, shipping: 0,   url: "https://example.com/yahoo/wr7658-1" },
+      { mall: "Yahoo", shop: "カジュアルアウトドア",       item: "Columbia WR7658 Spire Valley XL",                    price: 10500, shipping: 0,   url: "https://example.com/yahoo/wr7658-2" },
     ],
   },
+  // SKU-007 AVIREX AVX3514 4WAY ボンサック (my 9,000, good → anchor 9,200)
   {
-    keywords: ["new balance 996", "nb996", "0739980012346"],
+    keywords: ["avx3514", "avirex avx3514", "avirex ボンサック", "avirex 4way"],
     items: [
-      { mall: "楽天",  shop: "プレミアムシューズ",         item: "New Balance 996 ネイビー MRL996",           price: 19500, shipping: 0,   url: "https://example.com/rakuten/nb996-1" },
-      { mall: "楽天",  shop: "シューズセレクション",       item: "ニューバランス 996 ネイビー",               price: 19800, shipping: 500, url: "https://example.com/rakuten/nb996-2" },
-      { mall: "楽天",  shop: "スニーカーラボ",             item: "NB MRL996 Navy メンズ/レディース",          price: 20200, shipping: 0,   url: "https://example.com/rakuten/nb996-3" },
-      { mall: "Yahoo", shop: "フットウェアジャパン",       item: "New Balance 996 Navy Classic",              price: 19300, shipping: 600, url: "https://example.com/yahoo/nb996-1" },
-      { mall: "Yahoo", shop: "スニーカーエージェント",     item: "ニューバランス 996 NV 人気モデル",          price: 20500, shipping: 0,   url: "https://example.com/yahoo/nb996-2" },
+      { mall: "楽天",  shop: "AVIREX楽天ストア",           item: "AVIREX AVX3514 4WAY ボンサック ブラック",           price: 9200,  shipping: 0,   url: "https://example.com/rakuten/avx3514-1" },
+      { mall: "楽天",  shop: "ミリタリーショップ",         item: "アヴィレックス 4WAY ボンサック バックパック",        price: 9500,  shipping: 0,   url: "https://example.com/rakuten/avx3514-2" },
+      { mall: "楽天",  shop: "バッグセレクト",             item: "AVIREX AVX3514 ショルダー/ボストン",                price: 9800,  shipping: 0,   url: "https://example.com/rakuten/avx3514-3" },
+      { mall: "Yahoo", shop: "ミリタリースタイル",         item: "AVIREX AVX3514 ボンサック カーキ",                   price: 9400,  shipping: 0,   url: "https://example.com/yahoo/avx3514-1" },
+      { mall: "Yahoo", shop: "バッグ専門Yahoo",             item: "アヴィレックス 4WAY バッグ",                         price: 9900,  shipping: 0,   url: "https://example.com/yahoo/avx3514-2" },
     ],
   },
+  // SKU-008 CHUMS CH60-4039 トートバッグ ブービーステッチ (my 8,900, urgent → anchor 7,800)
   {
-    keywords: ["all star", "converse", "オールスター", "コンバース", "4549643000001"],
+    keywords: ["ch60-4039", "chums ch60", "chums トート", "ブービーステッチ", "booby stitch"],
     items: [
-      { mall: "楽天",  shop: "コンバース楽天店",           item: "Converse All Star HI ホワイト",             price: 7500, shipping: 0,   url: "https://example.com/rakuten/allstar-1" },
-      { mall: "楽天",  shop: "スニーカーマニア",           item: "コンバース オールスター ハイ ホワイト",     price: 7200, shipping: 300, url: "https://example.com/rakuten/allstar-2" },
-      { mall: "楽天",  shop: "シューズファクトリー",       item: "Converse CT70 Hi White",                    price: 7800, shipping: 0,   url: "https://example.com/rakuten/allstar-3" },
-      { mall: "Yahoo", shop: "カジュアルシューズ館",       item: "オールスター ハイカット ホワイト",          price: 7400, shipping: 300, url: "https://example.com/yahoo/allstar-1" },
-      { mall: "Yahoo", shop: "靴のヒラキYahoo店",          item: "Converse All Star レギュラー HI",           price: 7900, shipping: 0,   url: "https://example.com/yahoo/allstar-2" },
+      { mall: "楽天",  shop: "CHUMS楽天公式",              item: "CHUMS トートバッグ ブービーステッチ CH60-4039",     price: 7800,  shipping: 0,   url: "https://example.com/rakuten/ch60-1" },
+      { mall: "楽天",  shop: "アウトドアバッグ館",         item: "チャムス ブービー トートバッグ",                     price: 8000,  shipping: 0,   url: "https://example.com/rakuten/ch60-2" },
+      { mall: "楽天",  shop: "カジュアルCHUMS",             item: "CHUMS CH60-4039 ベージュ",                           price: 8200,  shipping: 0,   url: "https://example.com/rakuten/ch60-3" },
+      { mall: "Yahoo", shop: "アウトドア Yahoo",            item: "CHUMS ブービーステッチ トート",                      price: 7950,  shipping: 0,   url: "https://example.com/yahoo/ch60-1" },
+      { mall: "Yahoo", shop: "バッグストア",               item: "チャムス トートバッグ CH60-4039",                    price: 8300,  shipping: 0,   url: "https://example.com/yahoo/ch60-2" },
     ],
   },
+  // SKU-009 Columbia PG3033 Urban Hike Graphic Tシャツ (my 4,680, recommend → anchor 4,400)
   {
-    keywords: ["vans old skool", "old skool", "オールドスクール", "vans", "0191163000001"],
+    keywords: ["pg3033", "columbia pg3033", "urban hike"],
     items: [
-      { mall: "楽天",  shop: "ヴァンズ公式楽天",           item: "Vans Old Skool ブラック/ホワイト",          price: 9700, shipping: 0,   url: "https://example.com/rakuten/vans-1" },
-      { mall: "楽天",  shop: "スケーターショップ",         item: "バンズ オールドスクール 定番",              price: 9400, shipping: 500, url: "https://example.com/rakuten/vans-2" },
-      { mall: "楽天",  shop: "スニーカーブティック",       item: "VANS Old Skool Classic Black/White",        price: 10100, shipping: 0,   url: "https://example.com/rakuten/vans-3" },
-      { mall: "Yahoo", shop: "ストリートシューズ",         item: "Vans Old Skool BLK/WHT メンズ",             price: 9500, shipping: 300, url: "https://example.com/yahoo/vans-1" },
-      { mall: "Yahoo", shop: "アーバンフット",             item: "バンズ オールドスクール 人気",              price: 10200, shipping: 0,   url: "https://example.com/yahoo/vans-2" },
+      { mall: "楽天",  shop: "コロンビア楽天",             item: "Columbia Urban Hike Graphic Tシャツ PG3033",        price: 4400,  shipping: 0,   url: "https://example.com/rakuten/pg3033-1" },
+      { mall: "楽天",  shop: "アウトドアストア",           item: "コロンビア アーバンハイク グラフィック Tシャツ",     price: 4500,  shipping: 0,   url: "https://example.com/rakuten/pg3033-2" },
+      { mall: "楽天",  shop: "カジュアルシャツ館",         item: "Columbia PG3033 Tee メンズ",                         price: 4650,  shipping: 0,   url: "https://example.com/rakuten/pg3033-3" },
+      { mall: "Yahoo", shop: "カジュアル Yahoo",            item: "Columbia Urban Hike Tシャツ ホワイト",              price: 4550,  shipping: 0,   url: "https://example.com/yahoo/pg3033-1" },
+      { mall: "Yahoo", shop: "アパレルストア",             item: "コロンビア PG3033 半袖 Tシャツ",                     price: 4750,  shipping: 0,   url: "https://example.com/yahoo/pg3033-2" },
     ],
   },
+  // SKU-010 Columbia YU8523 SKYRIDE STREET WATERPROOF (my 13,100, recommend → anchor 12,400)
   {
-    keywords: ["gel-kayano", "kayano", "ゲルカヤノ", "カヤノ", "asics", "4550456000001"],
+    keywords: ["yu8523", "columbia yu8523", "skyride street", "skyride"],
     items: [
-      { mall: "楽天",  shop: "アシックス楽天店",           item: "asics GEL-KAYANO 30 メンズ",                price: 21000, shipping: 0,   url: "https://example.com/rakuten/kayano-1" },
-      { mall: "楽天",  shop: "ランニング専門店RunRun",     item: "ゲルカヤノ30 ランニング メンズ",            price: 21500, shipping: 500, url: "https://example.com/rakuten/kayano-2" },
-      { mall: "楽天",  shop: "スポーツオーソリティ楽天",   item: "ASICS GEL-KAYANO 30 Running",               price: 22800, shipping: 0,   url: "https://example.com/rakuten/kayano-3" },
-      { mall: "Yahoo", shop: "ランナーズショップ",         item: "アシックス ゲルカヤノ30 正規品",            price: 21300, shipping: 300, url: "https://example.com/yahoo/kayano-1" },
-      { mall: "Yahoo", shop: "フィットネスストア",         item: "GEL-KAYANO 30 Men's ランシュー",            price: 22500, shipping: 0,   url: "https://example.com/yahoo/kayano-2" },
-    ],
-  },
-  {
-    keywords: ["puma suede", "suede classic", "プーマ スウェード", "スウェード", "4064536000001"],
-    items: [
-      { mall: "楽天",  shop: "プーマ公式楽天",             item: "PUMA Suede Classic XXI ブラック",           price: 10000, shipping: 0,   url: "https://example.com/rakuten/puma-1" },
-      { mall: "楽天",  shop: "スニーカーカンパニー",       item: "プーマ スウェード クラシック",              price: 10300, shipping: 300, url: "https://example.com/rakuten/puma-2" },
-      { mall: "楽天",  shop: "シューズアウトレット",       item: "PUMA Suede Classic+",                       price: 10500, shipping: 0,   url: "https://example.com/rakuten/puma-3" },
-      { mall: "Yahoo", shop: "カジュアルフット",           item: "プーマ Suede Classic メンズ",               price: 10200, shipping: 300, url: "https://example.com/yahoo/puma-1" },
-      { mall: "Yahoo", shop: "ストリートブランド",         item: "PUMA スウェード 定番モデル",                price: 10700, shipping: 0,   url: "https://example.com/yahoo/puma-2" },
+      { mall: "楽天",  shop: "コロンビア楽天",             item: "Columbia SKYRIDE STREET WATERPROOF YU8523",         price: 12400, shipping: 0,   url: "https://example.com/rakuten/yu8523-1" },
+      { mall: "楽天",  shop: "防水シューズ館",             item: "コロンビア スカイライド ストリート 防水",            price: 12600, shipping: 0,   url: "https://example.com/rakuten/yu8523-2" },
+      { mall: "楽天",  shop: "シューズデポ楽天",           item: "Columbia YU8523 ストリート スニーカー",              price: 12900, shipping: 0,   url: "https://example.com/rakuten/yu8523-3" },
+      { mall: "Yahoo", shop: "アウトドア Yahoo",            item: "Columbia SKYRIDE STREET 防水 27cm",                  price: 12500, shipping: 0,   url: "https://example.com/yahoo/yu8523-1" },
+      { mall: "Yahoo", shop: "フットウェア Yahoo",          item: "コロンビア YU8523 防水スニーカー",                   price: 13000, shipping: 0,   url: "https://example.com/yahoo/yu8523-2" },
     ],
   },
 ];
@@ -117,8 +118,8 @@ function generateFallback(
   query: SearchQuery,
   targetMall: string
 ): RawItem[] {
-  const label = query.name || query.jan || "商品";
-  const seed = (query.name || query.jan || "x").length;
+  const label = query.name || query.model || query.jan || "商品";
+  const seed = (query.name || query.model || query.jan || "x").length;
   const base = 5000 + ((seed * 137) % 8000);
   const samples =
     targetMall === "楽天"
@@ -145,7 +146,7 @@ export const mockProvider: PriceProvider = {
   async fetchPrices(query, { mall }) {
     await new Promise((r) => setTimeout(r, 300 + Math.random() * 500));
 
-    const needle = [query.name, query.jan]
+    const needle = [query.name, query.jan, query.brand, query.model]
       .filter(Boolean)
       .map((s) => s!.trim().toLowerCase())
       .join(" ");
@@ -162,14 +163,18 @@ export const mockProvider: PriceProvider = {
 
     const items = matched.length > 0 ? matched : generateFallback(query, targetMall);
 
-    return items.map((it) => ({
-      mall: it.mall,
-      item_name: it.item,
-      shop_name: it.shop,
-      price: it.price,
-      shipping_fee: it.shipping,
-      effective_price: it.price + it.shipping,
-      url: it.url,
-    }));
+    return items.map((it) => {
+      const isFree = it.shipping === 0;
+      return {
+        mall: it.mall,
+        item_name: it.item,
+        shop_name: it.shop,
+        price: it.price,
+        shipping_fee: it.shipping,
+        shipping_name: isFree ? "送料無料" : `送料 ¥${it.shipping.toLocaleString()}`,
+        effective_price: it.price + it.shipping,
+        url: it.url,
+      };
+    });
   },
 };

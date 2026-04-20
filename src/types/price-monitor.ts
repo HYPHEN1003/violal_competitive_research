@@ -2,6 +2,7 @@ export interface SearchQuery {
   name?: string;
   jan?: string;
   model?: string;
+  brand?: string;
 }
 
 export interface CompetitorItem {
@@ -9,7 +10,8 @@ export interface CompetitorItem {
   item_name: string;
   shop_name: string;
   price: number;
-  shipping_fee: number;
+  shipping_fee: number | null;   // 0=送料無料, 正値=既知の送料, null=不明/条件付
+  shipping_name: string | null;  // Yahoo/楽天の公式ラベル（"送料無料"/"条件付"/"送料別" 等）
   effective_price: number;
   url: string;
 }
@@ -28,6 +30,7 @@ export interface Product {
   id: string;
   sku: string;
   name: string;
+  brand: string | null;
   jan: string | null;
   model: string | null;
   category: string | null;

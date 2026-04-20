@@ -24,9 +24,10 @@ export async function searchCompetitors(
 ): Promise<SearchResponse> {
   const name = (formData.get("name") as string)?.trim() || undefined;
   const jan = (formData.get("jan") as string)?.trim() || undefined;
+  const model = (formData.get("model") as string)?.trim() || undefined;
 
-  if (!name && !jan) {
-    throw new Error("商品名またはJANコードのいずれかを入力してください");
+  if (!name && !jan && !model) {
+    throw new Error("商品名、品番、またはJANコードのいずれかを入力してください");
   }
 
   const supabase = await createClient();
@@ -34,14 +35,18 @@ export async function searchCompetitors(
     data: { user },
   } = await supabase.auth.getUser();
 
-  const result = await searchAllMalls({ name, jan });
-  const lowest = findLowest(result.items);
-
+  // 自社商品マスタからマッチング（品番 → JAN → 商品名 の順）
   let myProduct: Product | null = null;
-  let suggestion: Suggestion | null = null;
-
-  // 自社商品マスタからマッチング
-  if (jan) {
+  if (model) {
+    const { data } = await supabase
+      .from("products")
+      .select("*")
+      .eq("model", model)
+      .limit(1)
+      .single();
+    if (data) myProduct = data as Product;
+  }
+  if (!myProduct && jan) {
     const { data } = await supabase
       .from("products")
       .select("*")
@@ -60,6 +65,20 @@ export async function searchCompetitors(
     if (data) myProduct = data as Product;
   }
 
+  // myProduct が見つかったら、brand と model を query に追加して検索
+  const baseQuery = { name, jan, model };
+  const enrichedQuery = myProduct
+    ? {
+        ...baseQuery,
+        brand: myProduct.brand ?? undefined,
+        model: myProduct.model ?? undefined,
+      }
+    : baseQuery;
+
+  const result = await searchAllMalls(enrichedQuery);
+  const lowest = findLowest(result.items);
+
+  let suggestion: Suggestion | null = null;
   if (myProduct && result.items.length > 0) {
     suggestion = analyze({ myProduct, competitors: result.items });
   }
@@ -150,20 +169,19 @@ export async function loadMonitorSummary(): Promise<MonitorSummary> {
     .eq("is_monitored", true);
 
   const counts = { urgent: 0, recommend: 0, monitor: 0, good: 0 };
-  let latestDate: Date | null = null;
+  let latestIso: string | null = null;
 
   (data ?? []).forEach((p) => {
     const level = p.last_suggestion_level as keyof typeof counts | null;
     if (level && level in counts) counts[level]++;
-    if (p.last_checked_at) {
-      const d = new Date(p.last_checked_at);
-      if (!latestDate || d > latestDate) latestDate = d;
+    if (p.last_checked_at && (!latestIso || p.last_checked_at > latestIso)) {
+      latestIso = p.last_checked_at;
     }
   });
 
   return {
     totalMonitored: data?.length ?? 0,
     counts,
-    lastCheckedAt: latestDate ? latestDate.toISOString() : null,
+    lastCheckedAt: latestIso,
   };
 }
