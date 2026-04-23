@@ -4,7 +4,7 @@ import Link from "next/link"
 export default function Home() {
   return (
     <main className="flex min-h-screen flex-col items-center justify-center gap-6 p-24">
-      <h1 className="text-4xl font-bold">[PROJECT_NAME]</h1>
+      <h1 className="text-4xl font-bold">violal_competitive_research</h1>
       <p className="max-w-md text-center text-muted-foreground">
         [PROJECT_DESCRIPTION]
       </p>

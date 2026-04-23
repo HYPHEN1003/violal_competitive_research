@@ -24,7 +24,7 @@ export default async function DashboardLayout({
       {/* デスクトップ サイドバー */}
       <aside className="hidden w-64 border-r bg-muted/40 md:block">
         <div className="flex h-14 items-center px-6 font-semibold">
-          [PROJECT_NAME]
+          violal_competitive_research
         </div>
         <Separator />
         <nav className="space-y-1 p-4">
@@ -46,7 +46,7 @@ export default async function DashboardLayout({
           <div className="flex items-center gap-2">
             {/* モバイル: ハンバーガーメニュー */}
             <MobileSidebar />
-            <h1 className="text-sm font-medium">[PROJECT_NAME]</h1>
+            <h1 className="text-sm font-medium">violal_competitive_research</h1>
           </div>
           <div className="flex items-center gap-4">
             <span className="hidden text-sm text-muted-foreground sm:inline">

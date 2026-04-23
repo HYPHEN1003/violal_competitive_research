@@ -29,7 +29,7 @@ export function MobileSidebar() {
       </Button>
       <SheetContent side="left" className="w-64 p-0">
         <SheetHeader className="px-6 py-4">
-          <SheetTitle>[PROJECT_NAME]</SheetTitle>
+          <SheetTitle>violal_competitive_research</SheetTitle>
         </SheetHeader>
         <Separator />
         <nav className="space-y-1 p-4">

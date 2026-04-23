@@ -3,7 +3,7 @@ import "./globals.css"
 import { Providers } from "./_components/providers"
 
 export const metadata: Metadata = {
-  title: "HYPHEN Project",
+  title: "VIOLAL_PROJECT",
   description: "HYPHEN Project Template",
 }
 

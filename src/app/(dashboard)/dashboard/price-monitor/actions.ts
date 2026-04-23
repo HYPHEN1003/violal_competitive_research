@@ -2,12 +2,16 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { searchAllMalls, findLowest } from "@/lib/price-api";
+import { yahooProvider } from "@/lib/providers/yahoo-provider";
 import { analyze } from "@/lib/suggestion-engine";
 import type {
   Product,
   CompetitorItem,
   Suggestion,
   SearchHistoryEntry,
+  SearchQuery,
+  BenchmarkShop,
+  BenchmarkResult,
 } from "@/types/price-monitor";
 
 export interface SearchResponse {
@@ -17,6 +21,67 @@ export interface SearchResponse {
   myProduct: Product | null;
   suggestion: Suggestion | null;
   count: number;
+  benchmarks: BenchmarkResult[];
+}
+
+async function searchBenchmarks(
+  query: SearchQuery,
+  myProduct: Product
+): Promise<BenchmarkResult[]> {
+  const supabase = await createClient();
+
+  const { data: shopsData, error } = await supabase
+    .from("benchmark_shops")
+    .select("*")
+    .eq("is_active", true)
+    .order("priority");
+
+  if (error || !shopsData) return [];
+  const shops = shopsData as BenchmarkShop[];
+
+  const results = await Promise.all(
+    shops.map(async (shop): Promise<BenchmarkResult> => {
+      try {
+        const items = await yahooProvider.fetchFromSeller(query, shop.yahoo_seller_id);
+        if (items.length === 0) {
+          return { shop, found: false };
+        }
+        const top = items[0]; // price ASC でソート済みの最安
+        const effective = top.effective_price ?? top.price;
+        const diff = myProduct.my_price - effective;
+        const ratio = effective > 0 ? diff / effective : 0;
+
+        return {
+          shop,
+          found: true,
+          item_name: top.item_name,
+          price: top.price,
+          shipping_fee: top.shipping_fee,
+          shipping_name: top.shipping_name,
+          effective_price: effective,
+          url: top.url,
+          jan_code: top.jan_code,
+          diff_amount: diff,
+          diff_ratio: ratio,
+        };
+      } catch {
+        return { shop, found: false };
+      }
+    })
+  );
+
+  // JAN 自動収集: 自社 products.jan が未設定で、どれかで取れていたら保存
+  if (!myProduct.jan) {
+    const anyJan = results.find((r) => r.found && r.jan_code)?.jan_code;
+    if (anyJan) {
+      await supabase
+        .from("products")
+        .update({ jan: anyJan })
+        .eq("id", myProduct.id);
+    }
+  }
+
+  return results;
 }
 
 export async function searchCompetitors(
@@ -75,7 +140,11 @@ export async function searchCompetitors(
       }
     : baseQuery;
 
-  const result = await searchAllMalls(enrichedQuery);
+  // 通常の全モール検索とベンチマーク3社検索を並列実行
+  const [result, benchmarks] = await Promise.all([
+    searchAllMalls(enrichedQuery),
+    myProduct ? searchBenchmarks(enrichedQuery, myProduct) : Promise.resolve([] as BenchmarkResult[]),
+  ]);
   const lowest = findLowest(result.items);
 
   let suggestion: Suggestion | null = null;
@@ -105,6 +174,7 @@ export async function searchCompetitors(
     myProduct,
     suggestion,
     count: result.items.length,
+    benchmarks,
   };
 }
 

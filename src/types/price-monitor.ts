@@ -14,6 +14,8 @@ export interface CompetitorItem {
   shipping_name: string | null;  // Yahoo/楽天の公式ラベル（"送料無料"/"条件付"/"送料別" 等）
   effective_price: number;
   url: string;
+  seller_id?: string;            // Yahoo: "galleria-onlineshop" 等のセラーID（benchmark判定用）
+  jan_code?: string;             // Yahoo APIから取れた JAN（自動収集用）
 }
 
 export interface SearchResult {
@@ -65,6 +67,28 @@ export interface Suggestion {
   diffAmount: number | null;
   diffRatio: number | null;
   actions: SuggestionAction[];
+}
+
+export interface BenchmarkShop {
+  id: string;
+  name: string;
+  yahoo_seller_id: string;
+  base_url: string;
+  priority: number;
+}
+
+export interface BenchmarkResult {
+  shop: BenchmarkShop;
+  found: boolean;
+  item_name?: string;
+  price?: number;
+  shipping_fee?: number | null;
+  shipping_name?: string | null;
+  effective_price?: number;
+  url?: string;
+  jan_code?: string;
+  diff_amount?: number;
+  diff_ratio?: number;
 }
 
 export interface SearchHistoryEntry {

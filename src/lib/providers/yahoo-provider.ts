@@ -27,12 +27,17 @@ function strictTokenMatchFilter<T extends { item_name: string }>(items: T[], que
   });
 }
 
-function toCompetitorItems(hits: Array<Record<string, unknown>>): CompetitorItem[] {
+function toCompetitorItems(
+  hits: Array<Record<string, unknown>>,
+  options: { excludeSelf?: boolean } = { excludeSelf: true }
+): CompetitorItem[] {
   return hits
     .filter((it) => {
       const name = String(it.name ?? "");
       const sellerName = String((it.seller as Record<string, unknown>)?.name ?? "");
-      if (SELF_SELLER_PATTERN.test(sellerName) || SELF_SELLER_PATTERN.test(name)) return false;
+      if (options.excludeSelf && (SELF_SELLER_PATTERN.test(sellerName) || SELF_SELLER_PATTERN.test(name))) {
+        return false;
+      }
       return !USED_NAME_PATTERN.test(name)
         && !NOISE_NAME_PATTERN.test(name)
         && !KIDS_SIZE_PATTERN.test(name);
@@ -41,69 +46,107 @@ function toCompetitorItems(hits: Array<Record<string, unknown>>): CompetitorItem
       const price = Number(it.price) || 0;
       const shippingRaw = it.shipping as Record<string, unknown> | undefined;
       const shippingName = shippingRaw?.name ? String(shippingRaw.name) : null;
-      // shipping.name === "送料無料" のみ信頼して 0 円扱い。それ以外は null（送料分は effective_price に含めない）
       const freeShipping = shippingName === "送料無料";
       const shippingFee: number | null = freeShipping ? 0 : null;
       const effectivePrice = freeShipping ? price + 0 : price;
+      const sellerRaw = it.seller as Record<string, unknown> | undefined;
+      const sellerId = sellerRaw?.sellerId ? String(sellerRaw.sellerId) : undefined;
+      const janCode = it.janCode ? String(it.janCode) : undefined;
 
       return {
         mall: "Yahoo",
         item_name: String(it.name ?? ""),
-        shop_name: String((it.seller as Record<string, unknown>)?.name ?? ""),
+        shop_name: String(sellerRaw?.name ?? ""),
         price,
         shipping_fee: shippingFee,
         shipping_name: shippingName,
         effective_price: effectivePrice,
         url: String(it.url ?? ""),
+        seller_id: sellerId,
+        jan_code: janCode,
       };
     });
 }
 
-export const yahooProvider: PriceProvider = {
-  async fetchPrices(query: SearchQuery): Promise<CompetitorItem[]> {
-    const clientId = process.env.YAHOO_CLIENT_ID;
-    if (!clientId) throw new Error("YAHOO_CLIENT_ID が設定されていません");
+async function callYahoo(paramOverrides: Record<string, string>): Promise<Array<Record<string, unknown>>> {
+  const clientId = process.env.YAHOO_CLIENT_ID;
+  if (!clientId) throw new Error("YAHOO_CLIENT_ID が設定されていません");
+  const params = new URLSearchParams({
+    appid: clientId,
+    results: "30",
+    sort: "+price",
+    output: "json",
+    condition: "new",
+    ...paramOverrides,
+  });
+  const res = await fetch(
+    `https://shopping.yahooapis.jp/ShoppingWebService/V3/itemSearch?${params}`
+  );
+  if (!res.ok) {
+    throw new Error(`Yahoo API エラー: ${res.status} ${res.statusText}`);
+  }
+  const json = await res.json();
+  return json.hits ?? [];
+}
 
-    async function runSearch(paramOverrides: Record<string, string>): Promise<CompetitorItem[]> {
-      const params = new URLSearchParams({
-        appid: clientId!,
-        results: "30",
-        sort: "+price",
-        output: "json",
-        condition: "new",
-        ...paramOverrides,
-      });
-      const res = await fetch(
-        `https://shopping.yahooapis.jp/ShoppingWebService/V3/itemSearch?${params}`
-      );
-      if (!res.ok) {
-        throw new Error(`Yahoo API エラー: ${res.status} ${res.statusText}`);
-      }
-      const json = await res.json();
-      const hits: Array<Record<string, unknown>> = json.hits ?? [];
+async function fetchFromSeller(query: SearchQuery, sellerId: string): Promise<CompetitorItem[]> {
+  // セラー指定検索。JAN > brand+model > name の優先順位は fetchPrices と同じ。
+  // セラー指定時は violal 自己除外は不要（benchmark対象のために呼ぶ関数なので、
+  // そもそも sellerId が violal でないことが前提）→ excludeSelf: false で通す
+  const base = { seller_id: sellerId };
+
+  if (query.jan) {
+    const hits = await callYahoo({ ...base, jan_code: query.jan });
+    return toCompetitorItems(hits, { excludeSelf: false });
+  }
+
+  if (query.brand && query.model) {
+    const hits = await callYahoo({ ...base, query: `${query.brand} ${query.model}` });
+    const items = toCompetitorItems(hits, { excludeSelf: false });
+    if (items.length > 0) return items;
+    if (query.name) {
+      const fbHits = await callYahoo({ ...base, query: query.name });
+      const fbItems = toCompetitorItems(fbHits, { excludeSelf: false });
+      return strictTokenMatchFilter(fbItems, query.name);
+    }
+    return [];
+  }
+
+  if (query.name) {
+    const hits = await callYahoo({ ...base, query: query.name });
+    return toCompetitorItems(hits, { excludeSelf: false });
+  }
+
+  return [];
+}
+
+export const yahooProvider: PriceProvider & {
+  fetchFromSeller: (query: SearchQuery, sellerId: string) => Promise<CompetitorItem[]>;
+} = {
+  async fetchPrices(query: SearchQuery): Promise<CompetitorItem[]> {
+    if (query.jan) {
+      const hits = await callYahoo({ jan_code: query.jan });
       return toCompetitorItems(hits);
     }
 
-    // 優先順位: JAN > ブランド+型番 > 商品名
-    // 型番検索で他店0件の場合は、商品名に自動フォールバック（型番がブランド独自体系で他店タイトルにない場合の救済）
-    if (query.jan) {
-      return runSearch({ jan_code: query.jan });
-    }
-
     if (query.brand && query.model) {
-      const byModel = await runSearch({ query: `${query.brand} ${query.model}` });
-      if (byModel.length > 0) return byModel;
+      const hits = await callYahoo({ query: `${query.brand} ${query.model}` });
+      const items = toCompetitorItems(hits);
+      if (items.length > 0) return items;
       if (query.name) {
-        const byName = await runSearch({ query: query.name });
-        return strictTokenMatchFilter(byName, query.name);
+        const fbHits = await callYahoo({ query: query.name });
+        const fbItems = toCompetitorItems(fbHits);
+        return strictTokenMatchFilter(fbItems, query.name);
       }
       return [];
     }
 
     if (query.name) {
-      return runSearch({ query: query.name });
+      const hits = await callYahoo({ query: query.name });
+      return toCompetitorItems(hits);
     }
 
     return [];
   },
+  fetchFromSeller,
 };
