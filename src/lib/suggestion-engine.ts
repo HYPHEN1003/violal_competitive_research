@@ -6,8 +6,8 @@ import type {
   SuggestionAction,
 } from "@/types/price-monitor";
 
+// 信号機3段階に統合: 0 以下 = 良好 / 10% 未満 = 経過観察 / 10% 以上 = 対応推奨
 const URGENT_THRESHOLD = 0.10;
-const RECOMMEND_THRESHOLD = 0.03;
 const MARGIN_FLOOR_RATIO = 1.10;
 
 export function analyze({
@@ -45,27 +45,25 @@ export function analyze({
 
   if (ratio <= 0) {
     level = "good";
-    title = "価格優位";
-    summary = `自社価格は競合最安値より${Math.abs(diff).toLocaleString()}円安く、優位な状態です。`;
+    title = "良好";
+    summary = `自社価格は競合最安値より${Math.abs(diff).toLocaleString()}円安く、競争力のある状態です。`;
     actions.push(actionHold("現状維持", `自社 ¥${myProduct.my_price.toLocaleString()} ≤ 競合最安 ¥${lowest.effective_price.toLocaleString()}。現在の価格を維持してください。`));
-  } else if (ratio < RECOMMEND_THRESHOLD) {
-    level = "monitor";
-    title = "要監視";
-    const pointPct = Math.ceil(ratio * 100 + 0.5);
-    summary = `自社価格は競合最安より${diff.toLocaleString()}円（${(ratio * 100).toFixed(1)}%）高い状態です。軽い施策で対応可能です。`;
-    actions.push(actionPoint(pointPct, `ポイント${pointPct}%還元で実質価格を競合水準まで下げられます。利益への直接影響はありません。`));
-    actions.push(actionHold("静観", "3%未満の差は許容範囲です。競合の動向を継続監視してください。"));
   } else if (ratio < URGENT_THRESHOLD) {
-    level = "recommend";
-    title = "施策推奨";
-    summary = `自社価格は競合最安より${diff.toLocaleString()}円（${(ratio * 100).toFixed(1)}%）高い状態です。クーポン発行を推奨します。`;
-    actions.push(actionCoupon(myProduct, diff, minViablePrice));
+    level = "watch";
+    title = "経過観察";
     const pointPct = Math.ceil(ratio * 100 + 0.5);
-    actions.push(actionPoint(pointPct, `ポイント${pointPct}%還元で実質的に競合と同水準に。値引きしたくない場合の選択肢です。`));
+    summary = `自社価格は競合最安より${diff.toLocaleString()}円（${(ratio * 100).toFixed(1)}%）高い状態です。状況を注視しつつ、必要に応じて施策をご検討ください。`;
+    if (ratio < 0.03) {
+      actions.push(actionPoint(pointPct, `ポイント${pointPct}%還元で実質価格を競合水準まで下げられます。利益への直接影響はありません。`));
+      actions.push(actionHold("静観", "3%未満の差は許容範囲です。競合の動向を継続監視してください。"));
+    } else {
+      actions.push(actionCoupon(myProduct, diff, minViablePrice));
+      actions.push(actionPoint(pointPct, `ポイント${pointPct}%還元で実質的に競合と同水準に。値引きしたくない場合の選択肢です。`));
+    }
   } else {
     level = "urgent";
-    title = "緊急対応";
-    summary = `自社価格は競合最安より${diff.toLocaleString()}円（${(ratio * 100).toFixed(1)}%）高い状態です。早急な値下げまたは大型クーポンが必要です。`;
+    title = "対応推奨";
+    summary = `自社価格は競合最安より${diff.toLocaleString()}円（${(ratio * 100).toFixed(1)}%）高い状態です。早めの値下げまたは大型クーポンをご検討ください。`;
     actions.push(actionPriceChange(myProduct, lowest.effective_price, minViablePrice));
     actions.push(actionCoupon(myProduct, diff, minViablePrice));
   }

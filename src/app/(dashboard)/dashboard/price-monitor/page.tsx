@@ -8,7 +8,6 @@ import { SuggestionCard } from "./_components/suggestion-card";
 import { ResultsTable } from "./_components/results-table";
 import { SearchHistory } from "./_components/search-history";
 import { MonitorSummary } from "./_components/monitor-summary";
-import { BenchmarkCard } from "./_components/benchmark-card";
 import {
   searchCompetitors,
   loadSearchHistory,
@@ -103,12 +102,15 @@ export default function PriceMonitorPage() {
             queryName={queryName}
             queryJan={queryJan}
           />
-          <BenchmarkCard benchmarks={result.benchmarks} myProduct={result.myProduct} />
           <div className="space-y-2">
             <h3 className="text-base font-semibold">
               競合価格一覧（{result.count}件）
             </h3>
-            <ResultsTable items={result.items} myProduct={result.myProduct} />
+            <ResultsTable
+              items={result.items}
+              myProduct={result.myProduct}
+              benchmarks={result.benchmarks}
+            />
           </div>
         </>
       )}

@@ -5,11 +5,10 @@ import { Button } from "@/components/ui/button";
 import type { Suggestion } from "@/types/price-monitor";
 
 const LEVEL_STYLES: Record<string, { bg: string; text: string; label: string }> = {
-  urgent:    { bg: "bg-red-600",    text: "text-white", label: "緊急" },
-  recommend: { bg: "bg-orange-600", text: "text-white", label: "推奨" },
-  monitor:   { bg: "bg-blue-600",   text: "text-white", label: "監視" },
-  good:      { bg: "bg-green-600",  text: "text-white", label: "優位" },
-  no_data:   { bg: "bg-gray-500",   text: "text-white", label: "データなし" },
+  urgent:  { bg: "bg-red-600",    text: "text-white", label: "対応推奨" },
+  watch:   { bg: "bg-amber-500",  text: "text-white", label: "経過観察" },
+  good:    { bg: "bg-green-600",  text: "text-white", label: "良好" },
+  no_data: { bg: "bg-gray-500",   text: "text-white", label: "データなし" },
 };
 
 interface SuggestionCardProps {

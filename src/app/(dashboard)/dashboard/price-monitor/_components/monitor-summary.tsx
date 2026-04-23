@@ -17,13 +17,12 @@ function formatTimeAgo(iso: string | null): string {
   return `${Math.floor(hr / 24)}日前`;
 }
 
-type Level = "urgent" | "recommend" | "monitor" | "good";
+type Level = "urgent" | "watch" | "good";
 
 const LEVELS: { key: Level; label: string; icon: string; color: string; selectedBorder: string }[] = [
-  { key: "urgent",    label: "緊急", icon: "🔴", color: "bg-red-50 border-red-200 text-red-700",       selectedBorder: "border-red-500 ring-2 ring-red-300" },
-  { key: "recommend", label: "推奨", icon: "🟠", color: "bg-orange-50 border-orange-200 text-orange-700", selectedBorder: "border-orange-500 ring-2 ring-orange-300" },
-  { key: "monitor",   label: "監視", icon: "🔵", color: "bg-blue-50 border-blue-200 text-blue-700",      selectedBorder: "border-blue-500 ring-2 ring-blue-300" },
-  { key: "good",      label: "優位", icon: "🟢", color: "bg-green-50 border-green-200 text-green-700",    selectedBorder: "border-green-500 ring-2 ring-green-300" },
+  { key: "urgent", label: "対応推奨", icon: "🔴", color: "bg-red-50 border-red-200 text-red-700",       selectedBorder: "border-red-500 ring-2 ring-red-300" },
+  { key: "watch",  label: "経過観察", icon: "🟠", color: "bg-amber-50 border-amber-200 text-amber-800", selectedBorder: "border-amber-500 ring-2 ring-amber-300" },
+  { key: "good",   label: "良好",     icon: "🟢", color: "bg-green-50 border-green-200 text-green-700", selectedBorder: "border-green-500 ring-2 ring-green-300" },
 ];
 
 interface MonitorSummaryProps {
@@ -79,7 +78,7 @@ export function MonitorSummary({ onProductClick }: MonitorSummaryProps) {
         </div>
       </CardHeader>
       <CardContent className="space-y-4">
-        <div className="grid grid-cols-4 gap-3">
+        <div className="grid grid-cols-3 gap-3">
           {LEVELS.map((l) => {
             const isSelected = expandedLevel === l.key;
             return (

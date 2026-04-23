@@ -5,10 +5,12 @@ import { Button } from "@/components/ui/button";
 import type { SearchHistoryEntry } from "@/types/price-monitor";
 
 const LEVEL_LABEL: Record<string, string> = {
-  urgent: "緊急",
-  recommend: "推奨",
-  monitor: "監視",
-  good: "優位",
+  urgent: "対応推奨",
+  watch:  "経過観察",
+  good:   "良好",
+  // 旧データ（マイグレーション前）の互換用
+  recommend: "経過観察",
+  monitor:   "経過観察",
   no_data: "-",
 };
 

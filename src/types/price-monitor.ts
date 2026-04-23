@@ -42,12 +42,12 @@ export interface Product {
   is_monitored: boolean;
 }
 
+// 信号機モチーフの3段階: 対応推奨（赤）/ 経過観察（黄）/ 良好（緑）
 export type SuggestionLevel =
-  | "urgent"
-  | "recommend"
-  | "monitor"
-  | "good"
-  | "no_data";
+  | "urgent"   // ratio >= 10% - 対応推奨（赤）
+  | "watch"    // 0 < ratio < 10% - 経過観察（黄）
+  | "good"     // ratio <= 0% - 良好（緑）
+  | "no_data"; // 競合データなし
 
 export interface SuggestionAction {
   type: "coupon" | "price_change" | "point" | "hold";

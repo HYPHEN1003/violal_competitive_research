@@ -211,22 +211,24 @@ export interface MonitorSummary {
   totalMonitored: number;
   counts: {
     urgent: number;
-    recommend: number;
-    monitor: number;
+    watch: number;
     good: number;
   };
   lastCheckedAt: string | null;
 }
 
 export async function loadProductsByLevel(
-  level: "urgent" | "recommend" | "monitor" | "good"
+  level: "urgent" | "watch" | "good"
 ): Promise<Product[]> {
   const supabase = await createClient();
+  // watch は旧レベル（recommend / monitor）も含めて取得（マイグレーション前でも動くように）
+  const levelValues =
+    level === "watch" ? ["watch", "recommend", "monitor"] : [level];
   const { data } = await supabase
     .from("products")
     .select("*")
     .eq("is_monitored", true)
-    .eq("last_suggestion_level", level)
+    .in("last_suggestion_level", levelValues)
     .order("sales_rank");
   return (data ?? []) as Product[];
 }
@@ -238,12 +240,14 @@ export async function loadMonitorSummary(): Promise<MonitorSummary> {
     .select("last_suggestion_level, last_checked_at")
     .eq("is_monitored", true);
 
-  const counts = { urgent: 0, recommend: 0, monitor: 0, good: 0 };
+  const counts = { urgent: 0, watch: 0, good: 0 };
   let latestIso: string | null = null;
 
   (data ?? []).forEach((p) => {
-    const level = p.last_suggestion_level as keyof typeof counts | null;
-    if (level && level in counts) counts[level]++;
+    const raw = p.last_suggestion_level as string | null;
+    // 旧レベル（recommend/monitor）は watch にマージしてカウント
+    const level = raw === "recommend" || raw === "monitor" ? "watch" : raw;
+    if (level && level in counts) counts[level as keyof typeof counts]++;
     if (p.last_checked_at && (!latestIso || p.last_checked_at > latestIso)) {
       latestIso = p.last_checked_at;
     }
