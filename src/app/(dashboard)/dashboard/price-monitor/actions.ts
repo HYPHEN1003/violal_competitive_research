@@ -130,11 +130,13 @@ export async function searchCompetitors(
     if (data) myProduct = data as Product;
   }
 
-  // myProduct が見つかったら、brand と model を query に追加して検索
+  // myProduct が見つかったら、JAN（DB登録 or 自動収集済み）・brand・model を query に追加。
+  // JAN は検索精度最優先パスなので、フォーム入力 > DB登録値 の順で採用。
   const baseQuery = { name, jan, model };
   const enrichedQuery = myProduct
     ? {
         ...baseQuery,
+        jan: baseQuery.jan ?? myProduct.jan ?? undefined,
         brand: myProduct.brand ?? undefined,
         model: myProduct.model ?? undefined,
       }

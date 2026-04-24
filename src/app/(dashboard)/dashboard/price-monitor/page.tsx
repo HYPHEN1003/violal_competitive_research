@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useTransition } from "react";
 import { SearchForm } from "./_components/search-form";
-import { SummaryCard } from "./_components/summary-card";
 import { MyProductCard } from "./_components/my-product-card";
 import { SuggestionCard } from "./_components/suggestion-card";
 import { ResultsTable } from "./_components/results-table";
@@ -20,8 +19,6 @@ export default function PriceMonitorPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [history, setHistory] = useState<SearchHistoryEntry[]>([]);
   const [result, setResult] = useState<SearchResponse | null>(null);
-  const [queryName, setQueryName] = useState("");
-  const [queryJan, setQueryJan] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [, startTransition] = useTransition();
 
@@ -38,11 +35,6 @@ export default function PriceMonitorPage() {
 
   async function handleSearch(formData: FormData) {
     setError(null);
-    const name = (formData.get("name") as string)?.trim() || "";
-    const jan = (formData.get("jan") as string)?.trim() || "";
-    setQueryName(name);
-    setQueryJan(jan);
-
     try {
       const res = await searchCompetitors(formData);
       setResult(res);
@@ -92,16 +84,17 @@ export default function PriceMonitorPage() {
 
       {result && (
         <>
+          <SuggestionCard suggestion={result.suggestion} />
           <MyProductCard
             product={result.myProduct}
             suggestion={result.suggestion}
           />
-          <SuggestionCard suggestion={result.suggestion} />
-          <SummaryCard
-            result={result}
-            queryName={queryName}
-            queryJan={queryJan}
-          />
+          {result.errors.length > 0 && (
+            <div className="rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700">
+              一部モールの取得に失敗しました：
+              {result.errors.map((e) => `${e.mall}: ${e.message}`).join(" / ")}
+            </div>
+          )}
           <div className="space-y-2">
             <h3 className="text-base font-semibold">
               競合価格一覧（{result.count}件）
