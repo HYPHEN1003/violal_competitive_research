@@ -5,8 +5,10 @@ import { rakutenProvider } from "./providers/rakuten-provider";
 import { yahooProvider } from "./providers/yahoo-provider";
 
 function loadProviders(): Record<string, PriceProvider> {
+  // 楽天新API は applicationId と accessKey の両方が必須。どちらか欠ける場合は mock にフォールバック。
+  const rakutenReady = Boolean(process.env.RAKUTEN_APP_ID && process.env.RAKUTEN_ACCESS_KEY);
   return {
-    rakuten: process.env.RAKUTEN_APP_ID ? rakutenProvider : mockProvider,
+    rakuten: rakutenReady ? rakutenProvider : mockProvider,
     yahoo: process.env.YAHOO_CLIENT_ID ? yahooProvider : mockProvider,
   };
 }

@@ -1,6 +1,12 @@
 import type { PriceProvider } from "./types";
 import type { CompetitorItem, SearchQuery } from "@/types/price-monitor";
 
+// 楽天ウェブサービス 新API（2026-02-10〜）。旧API（app.rakuten.co.jp）は 2026-05-13 に完全停止。
+// 新API は applicationId（UUID）+ accessKey（pk_...）の二要素認証 + Origin ヘッダー必須。
+// Origin はアプリ登録URLのドメインに一致させる（実測: Referer は弾かれ Origin のみ通る挙動）。
+const RAKUTEN_ENDPOINT = "https://openapi.rakuten.co.jp/ichibams/api/IchibaItem/Search/20260401";
+const RAKUTEN_ORIGIN = "https://github.com"; // 楽天アプリ登録URL: https://github.com/HYPHEN1003/violal_competitive_research のオリジン
+
 // violal 自身の楽天出品は自社なので除外
 const SELF_SHOP_PATTERN = /violal/i;
 
@@ -35,6 +41,8 @@ function toCompetitorItems(rawItems: Array<Record<string, unknown>>): Competitor
       const shippingFee: number | null = freeShipping ? 0 : null;
       const shippingName = freeShipping ? "送料無料" : "送料別";
       const effectivePrice = freeShipping ? price + 0 : price;
+      const sellerId = it.shopCode ? String(it.shopCode) : undefined;
+      const janCode = it.janCode ? String(it.janCode) : undefined;
 
       return {
         mall: "楽天",
@@ -45,6 +53,8 @@ function toCompetitorItems(rawItems: Array<Record<string, unknown>>): Competitor
         shipping_name: shippingName,
         effective_price: effectivePrice,
         url: String(it.itemUrl ?? ""),
+        seller_id: sellerId,
+        jan_code: janCode,
       };
     });
 }
@@ -52,19 +62,23 @@ function toCompetitorItems(rawItems: Array<Record<string, unknown>>): Competitor
 export const rakutenProvider: PriceProvider = {
   async fetchPrices(query: SearchQuery): Promise<CompetitorItem[]> {
     const appId = process.env.RAKUTEN_APP_ID;
-    if (!appId) throw new Error("RAKUTEN_APP_ID が設定されていません");
+    const accessKey = process.env.RAKUTEN_ACCESS_KEY;
+    if (!appId || !accessKey) {
+      throw new Error("RAKUTEN_APP_ID または RAKUTEN_ACCESS_KEY が設定されていません");
+    }
 
     async function runSearch(keyword: string): Promise<CompetitorItem[]> {
       const params = new URLSearchParams({
         applicationId: appId!,
+        accessKey: accessKey!,
         format: "json",
         hits: "30",
         sort: "+itemPrice",
         keyword,
       });
-      const res = await fetch(
-        `https://app.rakuten.co.jp/services/api/IchibaItem/Search/20220601?${params}`
-      );
+      const res = await fetch(`${RAKUTEN_ENDPOINT}?${params}`, {
+        headers: { Origin: RAKUTEN_ORIGIN },
+      });
       if (!res.ok) {
         throw new Error(`楽天API エラー: ${res.status} ${res.statusText}`);
       }
@@ -74,7 +88,6 @@ export const rakutenProvider: PriceProvider = {
     }
 
     // 優先順位: JAN > ブランド+型番 > 商品名
-    // 型番検索で他店0件の場合は商品名にフォールバック（ブランド独自の型番体系で他店タイトルに載らない場合の救済）
     if (query.jan) {
       return runSearch(query.jan);
     }
