@@ -40,6 +40,14 @@ export interface Product {
   cost_price: number;
   stock: number;
   is_monitored: boolean;
+  last_suggestion_level?: string | null;
+  last_checked_at?: string | null;
+  sales_rank?: number | null;
+  // モール別 level（Phase: per-mall storage）
+  last_suggestion_level_yahoo?: string | null;
+  last_suggestion_level_rakuten?: string | null;
+  last_checked_at_yahoo?: string | null;
+  last_checked_at_rakuten?: string | null;
 }
 
 // 信号機モチーフの3段階: 対応推奨（赤）/ 経過観察（黄）/ 良好（緑）
@@ -73,12 +81,14 @@ export interface BenchmarkShop {
   id: string;
   name: string;
   yahoo_seller_id: string;
+  rakuten_shop_code: string | null;
   base_url: string;
   priority: number;
 }
 
 export interface BenchmarkResult {
   shop: BenchmarkShop;
+  mall: "Yahoo" | "楽天";        // どちらのモールから取得したか
   found: boolean;
   item_name?: string;
   price?: number;
@@ -89,6 +99,18 @@ export interface BenchmarkResult {
   jan_code?: string;
   diff_amount?: number;
   diff_ratio?: number;
+}
+
+// 自社（violal）の各モール出品から取得した実価格
+export interface SelfMallPrice {
+  mall: "Yahoo" | "楽天";
+  found: boolean;
+  item_name?: string;
+  price?: number;
+  shipping_fee?: number | null;
+  shipping_name?: string | null;
+  effective_price?: number;
+  url?: string;
 }
 
 export interface SearchHistoryEntry {

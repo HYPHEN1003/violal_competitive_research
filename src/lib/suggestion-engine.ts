@@ -10,6 +10,21 @@ import type {
 const URGENT_THRESHOLD = 0.10;
 const MARGIN_FLOOR_RATIO = 1.10;
 
+// モール別ミニ分析等で再利用するレベル判定（pure function）
+export function classifyLevel(
+  myPrice: number,
+  competitorLowest: number
+): { level: SuggestionLevel; title: string; diff: number; ratio: number } {
+  if (competitorLowest <= 0) {
+    return { level: "no_data", title: "競合データなし", diff: 0, ratio: 0 };
+  }
+  const diff = myPrice - competitorLowest;
+  const ratio = diff / competitorLowest;
+  if (ratio <= 0) return { level: "good", title: "良好", diff, ratio };
+  if (ratio < URGENT_THRESHOLD) return { level: "watch", title: "経過観察", diff, ratio };
+  return { level: "urgent", title: "対応推奨", diff, ratio };
+}
+
 export function analyze({
   myProduct,
   competitors,
@@ -80,6 +95,50 @@ export function analyze({
     diffRatio: ratio,
     actions,
   };
+}
+
+// モール別の推奨アクション生成（自社モール価格 vs モール別競合最安）
+export function buildMallSuggestion(
+  myProduct: Product,
+  myMallPrice: number,
+  competitorLowest: number
+): { level: SuggestionLevel; title: string; actions: SuggestionAction[]; diff: number; ratio: number } {
+  if (competitorLowest <= 0) {
+    return {
+      level: "no_data", title: "競合データなし", diff: 0, ratio: 0,
+      actions: [actionHold("現状維持", "競合データが取得できませんでした。")],
+    };
+  }
+  const minViablePrice = Math.ceil(myProduct.cost_price * MARGIN_FLOOR_RATIO);
+  const diff = myMallPrice - competitorLowest;
+  const ratio = diff / competitorLowest;
+  const mallProduct = { ...myProduct, my_price: myMallPrice };
+  const actions: SuggestionAction[] = [];
+  let level: SuggestionLevel;
+  let title: string;
+
+  if (ratio <= 0) {
+    level = "good"; title = "良好";
+    actions.push(actionHold("現状維持",
+      `自社 ¥${myMallPrice.toLocaleString()} ≤ 競合最安 ¥${competitorLowest.toLocaleString()}。現在の価格を維持してください。`));
+  } else if (ratio < URGENT_THRESHOLD) {
+    level = "watch"; title = "経過観察";
+    const pointPct = Math.ceil(ratio * 100 + 0.5);
+    if (ratio < 0.03) {
+      actions.push(actionPoint(pointPct,
+        `ポイント${pointPct}%還元で実質価格を競合水準まで下げられます。利益への直接影響はありません。`));
+      actions.push(actionHold("静観", "3%未満の差は許容範囲です。競合の動向を継続監視してください。"));
+    } else {
+      actions.push(actionCoupon(mallProduct, diff, minViablePrice));
+      actions.push(actionPoint(pointPct,
+        `ポイント${pointPct}%還元で実質的に競合と同水準に。値引きしたくない場合の選択肢です。`));
+    }
+  } else {
+    level = "urgent"; title = "対応推奨";
+    actions.push(actionPriceChange(mallProduct, competitorLowest, minViablePrice));
+    actions.push(actionCoupon(mallProduct, diff, minViablePrice));
+  }
+  return { level, title, actions, diff, ratio };
 }
 
 function actionCoupon(
