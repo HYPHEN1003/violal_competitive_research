@@ -29,15 +29,28 @@ interface MonitorSummaryProps {
   onProductClick?: (product: Product) => void;
 }
 
+type MallTab = "yahoo" | "rakuten";
+
 export function MonitorSummary({ onProductClick }: MonitorSummaryProps) {
   const [summary, setSummary] = useState<MS | null>(null);
   const [expandedLevel, setExpandedLevel] = useState<Level | null>(null);
   const [products, setProducts] = useState<Product[]>([]);
   const [loadingProducts, setLoadingProducts] = useState(false);
+  const [mallTab, setMallTab] = useState<MallTab>("yahoo");
 
   useEffect(() => {
     loadMonitorSummary().then(setSummary).catch(console.error);
   }, []);
+
+  async function fetchByMall(level: Level, mall: MallTab) {
+    setLoadingProducts(true);
+    try {
+      const result = await loadProductsByLevel(level, mall);
+      setProducts(result);
+    } finally {
+      setLoadingProducts(false);
+    }
+  }
 
   async function handleLevelClick(level: Level) {
     if (expandedLevel === level) {
@@ -46,12 +59,13 @@ export function MonitorSummary({ onProductClick }: MonitorSummaryProps) {
       return;
     }
     setExpandedLevel(level);
-    setLoadingProducts(true);
-    try {
-      const result = await loadProductsByLevel(level);
-      setProducts(result);
-    } finally {
-      setLoadingProducts(false);
+    await fetchByMall(level, mallTab);
+  }
+
+  async function handleMallTabChange(mall: MallTab) {
+    setMallTab(mall);
+    if (expandedLevel) {
+      await fetchByMall(expandedLevel, mall);
     }
   }
 
@@ -96,6 +110,10 @@ export function MonitorSummary({ onProductClick }: MonitorSummaryProps) {
                   {summary.counts[l.key]}
                   <span className="ml-1 text-sm font-normal text-muted-foreground">件</span>
                 </div>
+                <div className="mt-2 space-y-0.5 text-xs opacity-80">
+                  <div>Yahoo: <span className="font-semibold tabular-nums">{summary.countsByMall[l.key].yahoo}件</span></div>
+                  <div>楽天: <span className="font-semibold tabular-nums">{summary.countsByMall[l.key].rakuten}件</span></div>
+                </div>
               </button>
             );
           })}
@@ -104,12 +122,40 @@ export function MonitorSummary({ onProductClick }: MonitorSummaryProps) {
         {expandedLevel && expandedLevelMeta && (
           <div className="rounded-lg border bg-muted/30 p-4">
             <h3 className="mb-3 text-sm font-semibold">
-              {expandedLevelMeta.icon} {expandedLevelMeta.label}レベルの商品（{products.length}件）
+              {expandedLevelMeta.icon} {mallTab === "yahoo" ? "Yahoo由来商品" : "楽天由来商品"}で {expandedLevelMeta.label}（{products.length}件）
             </h3>
+            {/* モール切替タブ */}
+            <div className="mb-3 flex border-b">
+              <button
+                type="button"
+                onClick={() => handleMallTabChange("yahoo")}
+                className={`-mb-px border-b-2 px-4 py-2 text-sm font-medium transition-colors ${
+                  mallTab === "yahoo"
+                    ? "border-primary text-primary"
+                    : "border-transparent text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                Yahoo由来（{summary.countsByMall[expandedLevel].yahoo}件）
+              </button>
+              <button
+                type="button"
+                onClick={() => handleMallTabChange("rakuten")}
+                className={`-mb-px border-b-2 px-4 py-2 text-sm font-medium transition-colors ${
+                  mallTab === "rakuten"
+                    ? "border-primary text-primary"
+                    : "border-transparent text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                楽天由来（{summary.countsByMall[expandedLevel].rakuten}件）
+              </button>
+            </div>
+
             {loadingProducts ? (
               <p className="text-sm text-muted-foreground">読み込み中…</p>
             ) : products.length === 0 ? (
-              <p className="text-sm text-muted-foreground">該当する商品がありません。</p>
+              <p className="text-sm text-muted-foreground">
+                {mallTab === "yahoo" ? "Yahoo由来" : "楽天由来"} の商品で {expandedLevelMeta.label} はありません。
+              </p>
             ) : (
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">

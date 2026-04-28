@@ -11,6 +11,17 @@ const KIDS_SIZE_PATTERN = /(\b(1[0-9]|2[0-2])\s?[-～〜~]\s?(1[0-9]{1,2}|2[0-2]
 // violal 自身の Yahoo 出品（"VIOLAL BAG&LUGGAGE ヤフー店" 等）は自社なので競合から除外
 const SELF_SELLER_PATTERN = /violal/i;
 
+// 検索対象の商品自体が NOISE/KIDS キーワードを含む場合（例: PUMA キッズリュック、撥水ショルダー）、
+// その語で結果を除外すると正しい競合まで弾かれて no_data になる。クエリ側にその語があるなら
+// フィルタを当てない方針。
+function buildFilterOptions(query: SearchQuery): { skipNoise: boolean; skipKids: boolean } {
+  const text = `${query.name ?? ""} ${query.brand ?? ""} ${query.model ?? ""}`;
+  return {
+    skipNoise: NOISE_NAME_PATTERN.test(text),
+    skipKids: KIDS_SIZE_PATTERN.test(text) || /キッズ|ジュニア|子ども|子供|こども/.test(text),
+  };
+}
+
 // name フォールバック時の誤マッチ（版違い等）対策。クエリ商品名の先頭5語を「必須トークン」として、
 // それらを全て含む出品のみを残す。例: "Salomon AERO GLIDE 4 GRVL ..." のとき「AERO GLIDE 3 GRVL」は "4" が無いため除外。
 function strictTokenMatchFilter<T extends { item_name: string }>(items: T[], queryName: string): T[] {
@@ -29,7 +40,7 @@ function strictTokenMatchFilter<T extends { item_name: string }>(items: T[], que
 
 function toCompetitorItems(
   hits: Array<Record<string, unknown>>,
-  options: { excludeSelf?: boolean } = { excludeSelf: true }
+  options: { excludeSelf?: boolean; skipNoise?: boolean; skipKids?: boolean } = { excludeSelf: true }
 ): CompetitorItem[] {
   return hits
     .filter((it) => {
@@ -38,9 +49,10 @@ function toCompetitorItems(
       if (options.excludeSelf && (SELF_SELLER_PATTERN.test(sellerName) || SELF_SELLER_PATTERN.test(name))) {
         return false;
       }
-      return !USED_NAME_PATTERN.test(name)
-        && !NOISE_NAME_PATTERN.test(name)
-        && !KIDS_SIZE_PATTERN.test(name);
+      if (USED_NAME_PATTERN.test(name)) return false;
+      if (!options.skipNoise && NOISE_NAME_PATTERN.test(name)) return false;
+      if (!options.skipKids && KIDS_SIZE_PATTERN.test(name)) return false;
+      return true;
     })
     .map((it) => {
       const price = Number(it.price) || 0;
@@ -89,24 +101,42 @@ async function callYahoo(paramOverrides: Record<string, string>): Promise<Array<
   return json.hits ?? [];
 }
 
+// brand==model は「型番未設定」のセンチネル（DB上 model フィールドにブランド名が入っているケース。
+// 例: AS2OV）。このときは brand+model 検索だと全ブランド商品にマッチして誤検出するので、
+// 直接 name-strict にフォールバックする。
+function isModelSentinel(query: SearchQuery): boolean {
+  return Boolean(query.brand && query.model && query.brand.toLowerCase() === query.model.toLowerCase());
+}
+
+// brand+model 検索の結果から「商品名に model が含まれるもの」のみを残す。
+// Yahoo/楽天のキーワード検索は AND ではなく関連度マッチなので、ブランドだけ合致した
+// 別型番（例: PMO-BA619 を検索したら PMO-BA627 のキーケースが返る）が混入する。
+function filterByModelInName<T extends { item_name: string }>(items: T[], model: string): T[] {
+  const m = model.toLowerCase();
+  return items.filter((i) => i.item_name.toLowerCase().includes(m));
+}
+
 async function fetchFromSeller(query: SearchQuery, sellerId: string): Promise<CompetitorItem[]> {
   // セラー指定検索。JAN > brand+model > name の優先順位は fetchPrices と同じ。
   // セラー指定時は violal 自己除外は不要（benchmark対象のために呼ぶ関数なので、
   // そもそも sellerId が violal でないことが前提）→ excludeSelf: false で通す
   const base = { seller_id: sellerId };
+  const flt = buildFilterOptions(query);
+  const opts = { excludeSelf: false, ...flt };
 
   if (query.jan) {
     const hits = await callYahoo({ ...base, jan_code: query.jan });
-    return toCompetitorItems(hits, { excludeSelf: false });
+    return toCompetitorItems(hits, opts);
   }
 
-  if (query.brand && query.model) {
+  if (query.brand && query.model && !isModelSentinel(query)) {
     const hits = await callYahoo({ ...base, query: `${query.brand} ${query.model}` });
-    const items = toCompetitorItems(hits, { excludeSelf: false });
-    if (items.length > 0) return items;
+    const items = toCompetitorItems(hits, opts);
+    const exact = filterByModelInName(items, query.model);
+    if (exact.length > 0) return exact;
     if (query.name) {
       const fbHits = await callYahoo({ ...base, query: query.name });
-      const fbItems = toCompetitorItems(fbHits, { excludeSelf: false });
+      const fbItems = toCompetitorItems(fbHits, opts);
       return strictTokenMatchFilter(fbItems, query.name);
     }
     return [];
@@ -114,7 +144,8 @@ async function fetchFromSeller(query: SearchQuery, sellerId: string): Promise<Co
 
   if (query.name) {
     const hits = await callYahoo({ ...base, query: query.name });
-    return toCompetitorItems(hits, { excludeSelf: false });
+    const items = toCompetitorItems(hits, opts);
+    return strictTokenMatchFilter(items, query.name);
   }
 
   return [];
@@ -124,18 +155,22 @@ export const yahooProvider: PriceProvider & {
   fetchFromSeller: (query: SearchQuery, sellerId: string) => Promise<CompetitorItem[]>;
 } = {
   async fetchPrices(query: SearchQuery): Promise<CompetitorItem[]> {
+    const flt = buildFilterOptions(query);
+    const opts = { excludeSelf: true, ...flt };
+
     if (query.jan) {
       const hits = await callYahoo({ jan_code: query.jan });
-      return toCompetitorItems(hits);
+      return toCompetitorItems(hits, opts);
     }
 
-    if (query.brand && query.model) {
+    if (query.brand && query.model && !isModelSentinel(query)) {
       const hits = await callYahoo({ query: `${query.brand} ${query.model}` });
-      const items = toCompetitorItems(hits);
-      if (items.length > 0) return items;
+      const items = toCompetitorItems(hits, opts);
+      const exact = filterByModelInName(items, query.model);
+      if (exact.length > 0) return exact;
       if (query.name) {
         const fbHits = await callYahoo({ query: query.name });
-        const fbItems = toCompetitorItems(fbHits);
+        const fbItems = toCompetitorItems(fbHits, opts);
         return strictTokenMatchFilter(fbItems, query.name);
       }
       return [];
@@ -143,7 +178,8 @@ export const yahooProvider: PriceProvider & {
 
     if (query.name) {
       const hits = await callYahoo({ query: query.name });
-      return toCompetitorItems(hits);
+      const items = toCompetitorItems(hits, opts);
+      return strictTokenMatchFilter(items, query.name);
     }
 
     return [];

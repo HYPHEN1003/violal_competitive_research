@@ -1,12 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import type { BenchmarkResult, CompetitorItem, Product } from "@/types/price-monitor";
+import type { BenchmarkResult, CompetitorItem, Product, SelfMallPrice } from "@/types/price-monitor";
 
 interface ResultsTableProps {
   items: CompetitorItem[];
   myProduct?: Product | null;
   benchmarks?: BenchmarkResult[];
+  selfMallPrices?: { yahoo: SelfMallPrice; rakuten: SelfMallPrice };
 }
 
 type BaseItem = CompetitorItem & { isSelf?: boolean };
@@ -22,10 +23,44 @@ const MALL_COLORS: Record<string, string> = {
   violal: "bg-indigo-600",
 };
 
-type Tab = "top" | "benchmark" | "all";
+type Tab = "top" | "benchmark" | "yahoo" | "rakuten";
 
-export function ResultsTable({ items, myProduct, benchmarks }: ResultsTableProps) {
+export function ResultsTable({ items, myProduct, benchmarks, selfMallPrices }: ResultsTableProps) {
   const [tab, setTab] = useState<Tab>("top");
+
+  // モールタブ用の自社行ビルダ（モール別実価格をかぶせる）
+  function buildMallSelfRow(mall: "Yahoo" | "楽天"): BaseItem | null {
+    if (!myProduct) return null;
+    const mp = mall === "Yahoo" ? selfMallPrices?.yahoo : selfMallPrices?.rakuten;
+    if (!mp || !mp.found || mp.price === undefined) return null;
+    const eff = mp.effective_price ?? mp.price;
+    return {
+      mall: "violal", // インディゴ強調を流用
+      item_name: mp.item_name ?? myProduct.name,
+      shop_name: `violal（${mall}店）`,
+      price: mp.price,
+      shipping_fee: mp.shipping_fee ?? null,
+      shipping_name: mp.shipping_name ?? null,
+      effective_price: eff,
+      url: mp.url ?? "",
+      isSelf: true,
+    };
+  }
+
+  // 標準競争順位を付与するヘルパ（モールタブ用に局所再ランクで使用）
+  function applyRanking(baseItems: BaseItem[]): DisplayItem[] {
+    const sorted = baseItems.slice().sort((a, b) => a.effective_price - b.effective_price);
+    const out: DisplayItem[] = [];
+    let prevPrice: number | null = null;
+    let prevRank = 0;
+    sorted.forEach((it, i) => {
+      const rank = prevPrice !== null && it.effective_price === prevPrice ? prevRank : i + 1;
+      out.push({ ...it, rank });
+      prevPrice = it.effective_price;
+      prevRank = rank;
+    });
+    return out;
+  }
 
   // 自社商品をマージしてソート
   const merged: BaseItem[] = myProduct
@@ -58,10 +93,11 @@ export function ResultsTable({ items, myProduct, benchmarks }: ResultsTableProps
   });
 
   // ベンチマーク行を DisplayItem に変換（取扱なしはプレースホルダ）
+  // 1社あたり最大2行（Yahoo + 楽天）出現するので、ショップ名にモール表記を併記
   const benchmarkDisplayItems: DisplayItem[] = (benchmarks ?? []).map((r, i) => ({
-    mall: "Yahoo",
+    mall: r.mall,
     item_name: r.found ? (r.item_name ?? "") : "取扱なし",
-    shop_name: r.shop.name,
+    shop_name: `${r.shop.name}（${r.mall}店）`,
     price: r.price ?? 0,
     shipping_fee: r.shipping_fee ?? null,
     shipping_name: r.shipping_name ?? null,
@@ -84,14 +120,38 @@ export function ResultsTable({ items, myProduct, benchmarks }: ResultsTableProps
   const selfRank = selfItem?.rank ?? null;
   const hasMoreBeyondTen = ranked.length > 10;
   const hasBenchmarks = benchmarkDisplayItems.length > 0;
-  const showTabs = hasMoreBeyondTen || hasBenchmarks;
+
+  const yahooItems = ranked.filter((x) => x.mall === "Yahoo");
+  const rakutenItems = ranked.filter((x) => x.mall === "楽天");
+  const yahooCount = yahooItems.length;
+  const rakutenCount = rakutenItems.length;
+
+  const showTabs = hasMoreBeyondTen || hasBenchmarks || (yahooCount > 0 && rakutenCount > 0);
 
   // 表示対象の行を決定
   let displayItems: DisplayItem[];
   let selfAppended = false;
   if (tab === "benchmark") {
     displayItems = benchmarkDisplayItems;
-  } else if (tab === "top") {
+  } else if (tab === "yahoo") {
+    // モール別自社価格を取得して、Yahoo競合と一緒に局所再ランク
+    const baseYahoo: BaseItem[] = yahooItems.map((item) => {
+      const { rank: _r, isBenchmark: _b, benchmarkFound: _f, ...rest } = item;
+      void _r; void _b; void _f;
+      return rest;
+    });
+    const selfRow = buildMallSelfRow("Yahoo");
+    displayItems = applyRanking(selfRow ? [...baseYahoo, selfRow] : baseYahoo);
+  } else if (tab === "rakuten") {
+    const baseRakuten: BaseItem[] = rakutenItems.map((item) => {
+      const { rank: _r, isBenchmark: _b, benchmarkFound: _f, ...rest } = item;
+      void _r; void _b; void _f;
+      return rest;
+    });
+    const selfRow = buildMallSelfRow("楽天");
+    displayItems = applyRanking(selfRow ? [...baseRakuten, selfRow] : baseRakuten);
+  } else {
+    // tab === "top"
     const top10 = ranked.slice(0, 10);
     const selfInTop10 = selfItem ? top10.includes(selfItem) : true;
     if (selfItem && !selfInTop10) {
@@ -100,8 +160,6 @@ export function ResultsTable({ items, myProduct, benchmarks }: ResultsTableProps
     } else {
       displayItems = top10;
     }
-  } else {
-    displayItems = ranked;
   }
 
   const minPrice = ranked.length > 0 ? ranked[0].effective_price : Infinity;
@@ -110,7 +168,7 @@ export function ResultsTable({ items, myProduct, benchmarks }: ResultsTableProps
   return (
     <div className="space-y-3">
       {showTabs && (
-        <div className="flex border-b">
+        <div className="flex flex-wrap border-b">
           <TabButton active={tab === "top"} onClick={() => setTab("top")}>
             上位10件{selfAppended && tab === "top" ? " + 自社" : ""}
           </TabButton>
@@ -119,8 +177,11 @@ export function ResultsTable({ items, myProduct, benchmarks }: ResultsTableProps
               ベンチマーク社（{benchFoundCount}/{benchmarkDisplayItems.length}社）
             </TabButton>
           )}
-          <TabButton active={tab === "all"} onClick={() => setTab("all")}>
-            全件表示（{ranked.length}件）
+          <TabButton active={tab === "yahoo"} onClick={() => setTab("yahoo")}>
+            Yahoo全件（{yahooCount}件）
+          </TabButton>
+          <TabButton active={tab === "rakuten"} onClick={() => setTab("rakuten")}>
+            楽天全件（{rakutenCount}件）
           </TabButton>
         </div>
       )}
@@ -197,11 +258,6 @@ export function ResultsTable({ items, myProduct, benchmarks }: ResultsTableProps
                     >
                       {item.mall}
                     </span>
-                    {isBenchmark && (
-                      <span className="ml-1 inline-block rounded bg-amber-600 px-1.5 py-0.5 text-[10px] font-semibold text-white">
-                        🎯
-                      </span>
-                    )}
                   </td>
                   <td className={`px-3 py-2.5 ${isSelf ? "font-semibold" : ""} ${bmNotFound ? "text-muted-foreground italic" : ""}`}>
                     {item.item_name}
@@ -246,7 +302,18 @@ export function ResultsTable({ items, myProduct, benchmarks }: ResultsTableProps
                   </td>
                   <td className="px-3 py-2.5">
                     {isSelf ? (
-                      <span className="text-xs text-muted-foreground">— 自社商品</span>
+                      item.url ? (
+                        <a
+                          href={item.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-xs text-indigo-700 hover:underline"
+                        >
+                          自社商品ページ ↗
+                        </a>
+                      ) : (
+                        <span className="text-xs text-muted-foreground">— 自社商品</span>
+                      )
                     ) : bmNotFound ? (
                       <a
                         href={item.url}

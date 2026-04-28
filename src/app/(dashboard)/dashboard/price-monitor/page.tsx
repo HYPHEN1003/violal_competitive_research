@@ -84,7 +84,11 @@ export default function PriceMonitorPage() {
 
       {result && (
         <>
-          <SuggestionCard suggestion={result.suggestion} />
+          <SuggestionCard
+            suggestion={result.suggestion}
+            items={result.items}
+            selfMallPrices={result.selfMallPrices}
+          />
           <MyProductCard
             product={result.myProduct}
             suggestion={result.suggestion}
@@ -103,6 +107,7 @@ export default function PriceMonitorPage() {
               items={result.items}
               myProduct={result.myProduct}
               benchmarks={result.benchmarks}
+              selfMallPrices={result.selfMallPrices}
             />
           </div>
         </>
