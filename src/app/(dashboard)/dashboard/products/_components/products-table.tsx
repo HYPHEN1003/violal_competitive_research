@@ -17,6 +17,21 @@ interface ProductsTableProps {
   products: Product[];
 }
 
+// 主モール方式: SKU-Y* は Yahoo戦線の level/timestamp、SKU-R* は楽天戦線
+function primaryLevel(p: Product): "urgent" | "watch" | "good" | "no_data" {
+  let raw: string | null | undefined = null;
+  if (p.sku.startsWith("SKU-Y")) raw = p.last_suggestion_level_yahoo;
+  else if (p.sku.startsWith("SKU-R")) raw = p.last_suggestion_level_rakuten;
+  const v = raw === "recommend" || raw === "monitor" ? "watch" : raw;
+  return v === "urgent" || v === "watch" || v === "good" ? v : "no_data";
+}
+
+function primaryCheckedAt(p: Product): string | null | undefined {
+  if (p.sku.startsWith("SKU-Y")) return p.last_checked_at_yahoo;
+  if (p.sku.startsWith("SKU-R")) return p.last_checked_at_rakuten;
+  return p.last_checked_at;
+}
+
 export function ProductsTable({ products }: ProductsTableProps) {
   const [search, setSearch] = useState("");
   const [source, setSource] = useState<SourceFilter>("all");
@@ -27,12 +42,7 @@ export function ProductsTable({ products }: ProductsTableProps) {
       if (source === "yahoo" && !p.sku.startsWith("SKU-Y")) return false;
       if (source === "rakuten" && !p.sku.startsWith("SKU-R")) return false;
       if (level !== "all") {
-        const lv = p.last_suggestion_level;
-        if (level === "no_data") {
-          if (lv === "urgent" || lv === "watch" || lv === "good") return false;
-        } else {
-          if (lv !== level) return false;
-        }
+        if (primaryLevel(p) !== level) return false;
       }
       if (search.trim()) {
         const needle = search.trim().toLowerCase();
@@ -108,8 +118,9 @@ export function ProductsTable({ products }: ProductsTableProps) {
               </tr>
             ) : (
               filtered.map((p) => {
-                const lv = p.last_suggestion_level as string | null | undefined;
-                const badge = lv && LEVEL_BADGE[lv] ? LEVEL_BADGE[lv] : null;
+                const lv = primaryLevel(p);
+                const badge = lv !== "no_data" ? LEVEL_BADGE[lv] : null;
+                const checkedAt = primaryCheckedAt(p);
                 return (
                   <tr key={p.id} className="border-b hover:bg-muted/30">
                     <td className="px-3 py-2.5 font-mono text-xs">{p.sku}</td>
@@ -128,11 +139,13 @@ export function ProductsTable({ products }: ProductsTableProps) {
                           {badge.label}
                         </span>
                       ) : (
-                        <span className="text-xs text-muted-foreground">—</span>
+                        <span className="inline-block rounded-full bg-muted px-2 py-0.5 text-[10px] font-bold text-muted-foreground">
+                          データなし
+                        </span>
                       )}
                     </td>
                     <td className="px-3 py-2.5 text-xs text-muted-foreground">
-                      {p.last_checked_at ? formatDate(p.last_checked_at) : "—"}
+                      {checkedAt ? formatDate(checkedAt) : "—"}
                     </td>
                   </tr>
                 );
