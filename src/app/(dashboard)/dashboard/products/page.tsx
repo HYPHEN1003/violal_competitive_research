@@ -13,17 +13,27 @@ export default async function ProductsPage() {
 
   const products = (data ?? []) as Product[];
 
-  // レベル × モール の集計
+  // 主モール方式: SKU-Y* は Yahoo戦線の level、SKU-R* は楽天戦線の level で集計（1 SKU = 1 カウント）
   function emptyCount() { return { total: 0, yahoo: 0, rakuten: 0 }; }
   const stats: Record<LevelKey, { total: number; yahoo: number; rakuten: number }> = {
     urgent: emptyCount(), watch: emptyCount(), good: emptyCount(), no_data: emptyCount(),
   };
+  function normalize(raw: string | null | undefined): LevelKey {
+    const v = raw === "recommend" || raw === "monitor" ? "watch" : raw;
+    return v === "urgent" || v === "watch" || v === "good" ? v : "no_data";
+  }
   for (const p of products) {
-    const raw = p.last_suggestion_level;
-    const lv: LevelKey = raw === "urgent" || raw === "watch" || raw === "good" ? raw : "no_data";
+    let lv: LevelKey = "no_data";
+    let mall: "yahoo" | "rakuten" | null = null;
+    if (p.sku.startsWith("SKU-Y")) {
+      lv = normalize(p.last_suggestion_level_yahoo);
+      mall = "yahoo";
+    } else if (p.sku.startsWith("SKU-R")) {
+      lv = normalize(p.last_suggestion_level_rakuten);
+      mall = "rakuten";
+    }
     stats[lv].total++;
-    if (p.sku.startsWith("SKU-Y")) stats[lv].yahoo++;
-    else if (p.sku.startsWith("SKU-R")) stats[lv].rakuten++;
+    if (mall) stats[lv][mall]++;
   }
 
   const yahooCount = products.filter((p) => p.sku.startsWith("SKU-Y")).length;
