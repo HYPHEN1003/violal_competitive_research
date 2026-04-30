@@ -180,3 +180,15 @@ npm run db:types           # DBスキーマからTypeScript型を自動生成
 - 空状態・エラー状態・ローディング状態を必ず実装する
 
 </important>
+
+
+<important if="you mention adopting a new tool, library, or external service">
+
+## 新規ツール導入の判断フロー
+1. **自作禁止リスト 17 項目**に該当するカテゴリか確認
+2. 該当する場合は **既定の選択肢（Supabase / Stripe / Sentry 等）を優先提案**
+3. 既定外を選ぶ理由が必要な場合は `docs/decisions/` に ADR で記録
+4. **引き算の原則**: 「**今週の売上に直結するか?**」を問う
+5. 導入が決まったら案件向け ADR またはプロジェクト記録に追加
+
+</important>
